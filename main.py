@@ -1,6 +1,4 @@
-import importlib
-
-database = importlib.import_module('modules.Database')
+import modules.Database as database
 
 if __name__=='__main__':
     #codigo main

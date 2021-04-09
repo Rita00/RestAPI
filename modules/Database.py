@@ -7,7 +7,7 @@ class Database(object):
         self.host=host
         self.port=port
         self.database=database
-        self.connection=None
+        self.connection=None    #self.connect()
 
     def connect(self):
         self.connection = psycopg2.connect(

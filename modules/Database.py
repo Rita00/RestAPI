@@ -1,21 +1,22 @@
 import psycopg2
 
+
 class Database(object):
-    def __init__(self, user,password,host,port,database):
-        self.user=user
-        self.password=password
-        self.host=host
-        self.port=port
-        self.database=database
-        self.connection=None    #self.connect()
+    def __init__(self, user, password, host, port, database):
+        self.user = user
+        self.password = password
+        self.host = host
+        self.port = port
+        self.database = database
+        self.connection = None  # self.connect()
 
     def connect(self):
         self.connection = psycopg2.connect(
-            user = self.user,
-            password = self.password,
-            host = self.host,
-            port = self.port,
-            database = self.database
+            user=self.user,
+            password=self.password,
+            host=self.host,
+            port=self.port,
+            database=self.database
         )
 
     def insert(self, sql):
@@ -35,9 +36,7 @@ class Database(object):
         print("database = ", self.database)
 
 
-
-
-if __name__=='__main__':
-    #testar codigo desta classe aqui
-    db = Database("project","project","127.0.0.1","7000","project_db")
+if __name__ == '__main__':
+    # testar codigo desta classe aqui
+    db = Database("project", "project", "127.0.0.1", "7000", "project_db")
     db.print()

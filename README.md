@@ -22,6 +22,10 @@ docker run -t -d --name BidYourAuction bidyourauction
 ```shell
 docker rm <CONTAINER ID>
 ```
+## Create the database
+```shell
+psql -h localhost -p 5432 -d bidyourauction_db -U admin
+```
 ## Run
 On the BidYourAuction container execute the main.py program
 ```shell

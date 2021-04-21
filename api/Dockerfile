@@ -9,5 +9,3 @@ RUN pip install flask
 RUN pip install psycopg2
 
 EXPOSE 8080
-
-RUN python main.py

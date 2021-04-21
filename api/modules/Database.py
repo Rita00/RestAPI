@@ -8,7 +8,8 @@ class Database(object):
         self.host = host
         self.port = port
         self.database = database
-        self.connection = None  # self.connect()
+        self.connect()
+        #self.connection = None
 
     def connect(self):
         self.connection = psycopg2.connect(

@@ -9,7 +9,7 @@ DROP TABLE IF EXISTS admin_auction CASCADE;
 DROP TABLE IF EXISTS admin_user CASCADE;
 
 CREATE TABLE auction (
-	id			 BIGINT,
+	id			 	 SERIAL,
 	code			 BIGINT NOT NULL,
 	min_price		 FLOAT(8) NOT NULL,
 	begin_date		 TIMESTAMP NOT NULL,
@@ -21,12 +21,12 @@ CREATE TABLE auction (
 );
 
 CREATE TABLE bid (
-	id			 INTEGER,
+	id			 SERIAL,
 	bid_date		 TIMESTAMP NOT NULL,
 	price		 FLOAT(8) NOT NULL,
 	isinvalided		 BOOL NOT NULL DEFAULT false,
 	participant_person_id INTEGER NOT NULL,
-	auction_id		 BIGINT NOT NULL,
+	auction_id		 INTEGER NOT NULL,
 	PRIMARY KEY(id)
 );
 
@@ -41,7 +41,7 @@ CREATE TABLE notification (
 CREATE TABLE feed_message (
 	type			 VARCHAR(512) NOT NULL,
 	participant_person_id INTEGER NOT NULL,
-	auction_id		 BIGINT NOT NULL,
+	auction_id		 INTEGER NOT NULL,
 	message_id		 INTEGER,
 	message_message	 VARCHAR(512) NOT NULL,
 	message_message_date	 TIMESTAMP NOT NULL,
@@ -49,7 +49,7 @@ CREATE TABLE feed_message (
 );
 
 CREATE TABLE admin (
-	person_id	 INTEGER,
+	person_id	 SERIAL,
 	person_username VARCHAR(512) UNIQUE NOT NULL,
 	person_email	 VARCHAR(512) UNIQUE NOT NULL,
 	person_password VARCHAR(512) NOT NULL,
@@ -58,8 +58,8 @@ CREATE TABLE admin (
 );
 
 CREATE TABLE participant (
-	isbanned	 BOOL NOT NULL DEFAULT false,
-	person_id	 INTEGER,
+	isbanned	 	BOOL NOT NULL DEFAULT false,
+	person_id	 	SERIAL,
 	person_username VARCHAR(512) UNIQUE NOT NULL,
 	person_email	 VARCHAR(512) UNIQUE NOT NULL,
 	person_password VARCHAR(512) NOT NULL,
@@ -72,13 +72,13 @@ CREATE TABLE textual_description (
 	title		 VARCHAR(512),
 	description	 VARCHAR(512),
 	alteration_date TIMESTAMP,
-	auction_id	 BIGINT,
+	auction_id	 INTEGER,
 	PRIMARY KEY(version,auction_id)
 );
 
 CREATE TABLE admin_auction (
 	admin_person_id INTEGER NOT NULL,
-	auction_id	 BIGINT,
+	auction_id	 INTEGER,
 	PRIMARY KEY(auction_id)
 );
 

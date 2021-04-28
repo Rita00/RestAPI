@@ -9,7 +9,6 @@ class Database(object):
         self.port = port
         self.database = database
         self.connect()
-        #self.connection = None
 
     def connect(self):
         self.connection = psycopg2.connect(
@@ -20,8 +19,19 @@ class Database(object):
             database=self.database
         )
 
-    def insert(self, sql):
-        pass
+    def signUp(self, username,email,password,token):
+        cursor = self.connection.cursor()
+        cursor.execute(
+            f"""
+            INSERT INTO participant(person_username,person_email,person_password,person_token)
+            VALUES ('{username}','{email}','{password}','{token}');
+            """
+        )
+        self.connection.commit()
+        cursor.execute(f"SELECT person_id FROM participant WHERE person_username='{username}';")
+        res = cursor.fetchone()[0]
+        cursor.close()
+        return res
 
     def remove(self, sql):
         pass
@@ -39,5 +49,5 @@ class Database(object):
 
 if __name__ == '__main__':
     # testar codigo desta classe aqui
-    db = Database("project", "project", "127.0.0.1", "7000", "project_db")
+    db = Database("bidyourauction", "bidyourauction", "docker.for.mac.localhost", "5432", "bidyourauction_db")
     db.print()

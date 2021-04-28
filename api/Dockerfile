@@ -1,8 +1,8 @@
 FROM python:3.9.4
 
-ENV POSTGRES_USER bidyourauction
-ENV POSTGRES_PASSWORD bidyourauction
-ENV POSTGRES_DB bidyourauction_db
+ENV BIDYOURAUCTION_USER bidyourauction
+ENV BIDYOURAUCTION_PASSWORD bidyourauction
+ENV BIDYOURAUCTION_DB bidyourauction_db
 
 ADD main.py /
 ADD modules /

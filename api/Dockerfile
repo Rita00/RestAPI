@@ -9,7 +9,7 @@ ADD modules /
 ADD modules/Database.py /modules/Database.py
 
 RUN pip install flask
-
+RUN pip install jwt
 RUN pip install psycopg2
 
 EXPOSE 8080

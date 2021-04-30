@@ -3,8 +3,6 @@ services:
   database:
     build: ./postgres
     container_name: postgres
-    networks:
-      - local
     expose:
       - "5432"
     ports:
@@ -13,8 +11,6 @@ services:
   server:
     build: ./api
     container_name: bidyourauction
-    networks:
-      - local
     volumes:
       - "./api"
     expose:
@@ -23,6 +19,3 @@ services:
       - "8080:5000"
     depends_on:
       - database
-networks:
-  local:
-    driver: bridge

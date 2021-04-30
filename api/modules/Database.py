@@ -49,5 +49,5 @@ class Database(object):
 
 if __name__ == '__main__':
     # testar codigo desta classe aqui
-    db = Database("bidyourauction", "bidyourauction", "localhost", "5432", "bidyourauction_db")
+    db = Database("bidyourauction", "bidyourauction", "docker.for.mac.localhost", "5432", "bidyourauction_db")
     db.print()

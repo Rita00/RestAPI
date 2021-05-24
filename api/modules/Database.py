@@ -23,7 +23,7 @@ class Database(object):
         )
 
 
-    def insert(self, table, columns, values, returnVal, returnCond):
+    def insert(self, table, columns, values, returnVal=None, returnCond=None):
         """ Insere na base de dados"""
         cursor = self.connection.cursor()
         cursor.execute(

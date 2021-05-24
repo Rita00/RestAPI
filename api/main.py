@@ -50,18 +50,24 @@ def createAuction():
     id = None
     try:
         content = request.json
-        id = db.signUp(
-            'participant',
-            'username, email, password',
-            f"{content['username']}, {content['email']}, {content['password']}",
+        id = db.insert(
+            'auction',
+            'code, min_price, begin_date, end_date',
+            f"{content['artigoId']}, {content['precoMinimo']}, '{content['password']}'",
             'person_id',
             f"person_username='{content['username']}'"
         )
+        db.insert(
+            'textual_description',
+            'title, description, NOW(), auction_id',
+            f"'{content['titulo']}', '{content['descricao']}', {id}",
+        )
     except Exception as e:
+        db.connection.commit()
         print(e)
         return jsonify({'erro': 401})
     print(f"Added user #{id}")
-    return jsonify({'userId': id})
+    return jsonify({'leilãoId': id})
 
 @app.route('/')
 @app.route('/home')

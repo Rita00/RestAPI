@@ -53,12 +53,12 @@ class Database(object):
         cursor = self.connection.cursor()
         cursor.execute(f"""
         SELECT * FROM participant WHERE person_username = '{username}' AND person_password = '{password}'""")
-        res = cursor.fetchall()[0]
-        cursor.close()
-        if res is None:
+        if cursor.rowcount < 1:
             return 'AuthError'
-        else:
-            return self.encode_auth_token(username)
+        res = cursor.fetchone()[0]
+        cursor.close()
+        return self.encode_auth_token(username)
+
 
     def encode_auth_token(self, user_id):
         """
@@ -78,6 +78,7 @@ class Database(object):
             )
         except Exception as e:
             return e
+
 
     @staticmethod
     def decode_auth_token(auth_token):

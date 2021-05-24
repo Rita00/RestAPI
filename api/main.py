@@ -30,7 +30,13 @@ def signUp():
 @app.route('/dbproj/user', methods=['PUT'])
 def signIn():
     """Login do utilizador"""
-    pass
+    try:
+        content = request.json
+        authToken = db.signIn(content['username'], content['password'])
+    except Exception as e:
+        print(e)
+        return jsonify({'erro': 401})
+    return jsonify({'authToken': authToken})
 
 
 @app.route('/')

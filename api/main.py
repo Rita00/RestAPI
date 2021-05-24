@@ -64,7 +64,17 @@ if __name__ == '__main__':
     print(BIDYOURAUCTION_PASSWORD)
     BIDYOURAUCTION_DB = os.environ.get('BIDYOURAUCTION_DB')
     print(BIDYOURAUCTION_DB)
-    db = database.Database(BIDYOURAUCTION_USER, BIDYOURAUCTION_PASSWORD, db_host, "5432", BIDYOURAUCTION_DB)
+
+    #db = database.Database(BIDYOURAUCTION_USER, BIDYOURAUCTION_PASSWORD, db_host, "5432", BIDYOURAUCTION_DB)
+    db = database.Database(
+        user = "vtxuzrplfviiht", 
+        password = "eb4ada6829ffce0e0f516062ea258ca6aa14d2fd85ea907ad910aa62eaf1412a", 
+        host = "ec2-34-254-69-72.eu-west-1.compute.amazonaws.com", 
+        port = "5432", 
+        database = "das7ket3c5aarn"
+        )
+
+
 
     # db = database.Database(user, user, db_host, "5432", 'bidyourauction_db')
     app.run(debug=True, host='localhost', port=8080)

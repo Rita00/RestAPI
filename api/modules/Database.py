@@ -22,16 +22,33 @@ class Database(object):
             database=self.database
         )
 
-    def signUp(self, username, email, password, token):
+
+    def insert(self, table, columns, values, returnVal=None, returnCond=None):
+        """ Insere na base de dados"""
         cursor = self.connection.cursor()
         cursor.execute(
             f"""
-            INSERT INTO participant(person_username,person_email,person_password,person_token)
-            VALUES ('{username}','{email}','{password}','{token}');
+            INSERT INTO {table}({columns})
+            VALUES ({values});
             """
         )
         self.connection.commit()
-        cursor.execute(f"SELECT person_id FROM participant WHERE person_username='{username}';")
+        if(returnVal!=None):
+            cursor.execute(f"SELECT {returnVal} FROM {table} WHERE {returnCond};")
+        res = cursor.fetchone()[0]
+        cursor.close()
+        return res
+
+    def select(self, columns, tables, cond):
+        """ Seleciona na base de dados"""
+        cursor = self.connection.cursor()
+        cursor.execute(
+            f"""
+            SELECT {columns}
+            FROM {tables}
+            WHERE {cond}
+            """
+        )
         res = cursor.fetchone()[0]
         cursor.close()
         return res
@@ -65,7 +82,7 @@ class Database(object):
         """
         try:
             payload = {
-                'exp': datetime.datetime.utcnow() + datetime.timedelta(days=0, seconds=5),
+                'exp': datetime.datetime.utcnow() + datetime.timedelta(hours=1),
                 'iat': datetime.datetime.utcnow(),
                 'sub': user_id
             }

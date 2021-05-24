@@ -55,10 +55,8 @@ class Database(object):
         SELECT * FROM participant WHERE person_username = '{username}' AND person_password = '{password}'""")
         if cursor.rowcount < 1:
             return 'AuthError'
-        res = cursor.fetchone()[0]
         cursor.close()
         return self.encode_auth_token(username)
-
 
     def encode_auth_token(self, user_id):
         """
@@ -79,7 +77,6 @@ class Database(object):
         except Exception as e:
             return e
 
-
     @staticmethod
     def decode_auth_token(auth_token):
         """
@@ -96,6 +93,17 @@ class Database(object):
 
         except jwt.InvalidTokenError:
             return 'Invalid token. Please log in again.'
+
+    def listAuctions(self, param):
+        cursor = self.connection.cursor()
+        sql = f"""SELECT id, description FROM auction, textual_description WHERE auction.id = textual_description.auction_id AND (auction.code::text like '%{param}%' OR textual_description.description like '%{param}%')"""
+        cursor.execute(sql)
+        if cursor.rowcount < 1:
+            res = []
+        else:
+            res = [{"leilaoId": row[0], "descricao": row[1]} for row in cursor.fetchall()]
+        cursor.close()
+        return res
 
 
 if __name__ == '__main__':

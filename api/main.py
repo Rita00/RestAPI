@@ -18,8 +18,14 @@ def signUp():
     id = None
     try:
         content = request.json
-        token = random.randint(0, 10000)  # TODO nao é definitivo
-        id = db.signUp(content['username'], content['email'], content['password'], token)
+        id = db.signUp(
+            'participant',
+            'username, email, password',
+            f"{content['username']}, {content['email']}, {content['password']}",
+            'person_id',
+            f"person_username='{content['username']}'"
+        
+        )
     except Exception as e:
         print(e)
         return jsonify({'erro': 401})
@@ -32,7 +38,21 @@ def signIn():
     """Login do utilizador"""
     pass
 
+@app.route('/dbproj/leilao', methods=['POST'])
+def createAuction():
+    """Criar Leilão"""
+    id = None
+    try:
+        content = request.json
+        token = random.randint(0, 10000)  # TODO nao é definitivo
+        id = db.signUp(content['username'], content['email'], content['password'], token)
+    except Exception as e:
+        print(e)
+        return jsonify({'erro': 401})
+    print(f"Added auction #{id}")
+    return jsonify({'userId': id})
 
+{“artigoId”: artigoId1, “precoMinimo”: preco, “titulo”: “Titulo do Novo Leilão”, “descricao”: “Descrição do Novo Leilão”, (...)}
 @app.route('/')
 @app.route('/home')
 def home():
@@ -40,6 +60,8 @@ def home():
 
 
 if __name__ == '__main__':
+    #localhost
+    """
     db_host = None
     if 'Windows' == platform.system():  # windows
         db_host = '127.0.0.1'
@@ -58,17 +80,23 @@ if __name__ == '__main__':
     print(BIDYOURAUCTION_PASSWORD)
     BIDYOURAUCTION_DB = os.environ.get('BIDYOURAUCTION_DB')
     print(BIDYOURAUCTION_DB)
-
     #db = database.Database(BIDYOURAUCTION_USER, BIDYOURAUCTION_PASSWORD, db_host, "5432", BIDYOURAUCTION_DB)
+    """
+    #Heroku
+
+    #BIDYOURAUCTION_USER = os.environ.get('BIDYOURAUCTION_USER')
+    #BIDYOURAUCTION_PASSWORD = os.environ.get('BIDYOURAUCTION_PASSWORD')
+    #BIDYOURAUCTION_HOST = os.environ.get('BIDYOURAUCTION_HOST')
+    #BIDYOURAUCTION_PORT = os.environ.get('BIDYOURAUCTION_PORT')
+    #BIDYOURAUCTION_DB = os.environ.get('BIDYOURAUCTION_DB')
+    #print(BIDYOURAUCTION_USER,BIDYOURAUCTION_PASSWORD,BIDYOURAUCTION_HOST,BIDYOURAUCTION_PORT,BIDYOURAUCTION_DB)
     db = database.Database(
         user = "vtxuzrplfviiht", 
         password = "eb4ada6829ffce0e0f516062ea258ca6aa14d2fd85ea907ad910aa62eaf1412a", 
         host = "ec2-34-254-69-72.eu-west-1.compute.amazonaws.com", 
         port = "5432", 
         database = "das7ket3c5aarn"
-        )
-
-
+    )
 
     # db = database.Database(user, user, db_host, "5432", 'bidyourauction_db')
     app.run(debug=True, host='localhost', port=8080)

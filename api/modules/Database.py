@@ -39,6 +39,20 @@ class Database(object):
         cursor.close()
         return res
 
+    def select(self, columns, tables, cond):
+        """ Seleciona na base de dados"""
+        cursor = self.connection.cursor()
+        cursor.execute(
+            f"""
+            SELECT {columns}
+            FROM {tables}
+            WHERE {cond}
+            """
+        )
+        res = cursor.fetchone()[0]
+        cursor.close()
+        return res
+
     def remove(self, sql):
         pass
 

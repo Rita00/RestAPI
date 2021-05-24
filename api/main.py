@@ -50,17 +50,24 @@ def createAuction():
     id = None
     try:
         content = request.json
+        #vai buscar o criador da eleição
+        token = jwt.decode("username") #TODO
+        person_id=db.select("person_id",'participant', f'person_username={token}')
+        #insere o leilão
         id = db.insert(
             'auction',
-            'code, min_price, begin_date, end_date',
-            f"{content['artigoId']}, {content['precoMinimo']}, '{content['password']}'",
+            'code, min_price, begin_date, end_date, participant_person_id',
+            f"{content['artigoId']}, {content['precoMinimo']}, '{content['password']}',{person_id}",
             'person_id',
             f"person_username='{content['username']}'"
         )
+        #conta as versoes existentes
+        version = db.select("count(*)",'textual_description', f'auction_id={id}')+1
+        #insere os dados textuais do leilão
         db.insert(
             'textual_description',
-            'title, description, NOW(), auction_id',
-            f"'{content['titulo']}', '{content['descricao']}', {id}",
+            'version, title, description, alteration_date, auction_id',
+            f"{version},'{content['titulo']}', '{content['descricao']}', NOW(),{id}",
         )
     except Exception as e:
         db.connection.commit()

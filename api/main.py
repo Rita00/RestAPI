@@ -51,10 +51,14 @@ if __name__ == '__main__':
         db_host = 'postgres'
         user = 'bidyourauction'
 
-    # BIDYOURAUCTION_USER=os.environ.get('BIDYOURAUCTION_USER')
-    # BIDYOURAUCTION_PASSWORD=os.environ.get('BIDYOURAUCTION_PASSWORD')
-    # BIDYOURAUCTION_DB=os.environ.get('BIDYOURAUCTION_DB')
-    # db = database.Database(BIDYOURAUCTION_USER,BIDYOURAUCTION_PASSWORD,db_host,"5432",BIDYOURAUCTION_DB)
+    # os.environ['BIDYOURAUCTION_USER'] = 'postgres'
+    BIDYOURAUCTION_USER = os.getenv('BIDYOURAUCTION_USER')
+    print(BIDYOURAUCTION_USER)
+    BIDYOURAUCTION_PASSWORD = os.environ.get('BIDYOURAUCTION_PASSWORD')
+    print(BIDYOURAUCTION_PASSWORD)
+    BIDYOURAUCTION_DB = os.environ.get('BIDYOURAUCTION_DB')
+    print(BIDYOURAUCTION_DB)
+    db = database.Database(BIDYOURAUCTION_USER, BIDYOURAUCTION_PASSWORD, db_host, "5432", BIDYOURAUCTION_DB)
 
-    db = database.Database(user, user, db_host, "5432", 'bidyourauction_db')
+    # db = database.Database(user, user, db_host, "5432", 'bidyourauction_db')
     app.run(debug=True, host='localhost', port=8080)

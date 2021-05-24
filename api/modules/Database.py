@@ -19,7 +19,7 @@ class Database(object):
             database=self.database
         )
 
-    def signUp(self, username,email,password,token):
+    def signUp(self, username, email, password, token):
         cursor = self.connection.cursor()
         cursor.execute(
             f"""
@@ -45,6 +45,16 @@ class Database(object):
         print("host = ", self.host)
         print("port = ", self.port)
         print("database = ", self.database)
+
+    def signIn(self, username, password):
+        cursor = self.connection.cursor()
+        cursor.execute(f"""
+        SELECT * FROM participant WHERE person_username = '{username}' AND person_password = '{password}'""")
+        res = cursor.fetchall()[0]
+        cursor.close()
+        if res is None:
+            return 'AuthError'
+        return ''
 
 
 if __name__ == '__main__':

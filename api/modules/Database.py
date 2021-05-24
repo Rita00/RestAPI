@@ -70,7 +70,7 @@ class Database(object):
         """
         try:
             payload = {
-                'exp': datetime.datetime.utcnow() + datetime.timedelta(days=0, seconds=5),
+                'exp': datetime.datetime.utcnow() + datetime.timedelta(hours=1),
                 'iat': datetime.datetime.utcnow(),
                 'sub': user_id
             }

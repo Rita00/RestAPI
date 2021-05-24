@@ -26,7 +26,7 @@ def signUp():
             f"person_username='{content['username']}'"
         )
     except Exception as e:
-        db.connection.commit()
+        db.connection.rollback()
         print(e)
         return jsonify({'erro': 401})
     print(f"Added user #{id}")
@@ -75,6 +75,17 @@ def createAuction(username):
         return jsonify({'erro': 401})
     print(f"Added user #{id}")
     return jsonify({'leilãoId': id})
+
+
+@app.route('/dbproj/leiloes/<keyword>', methods=['GET'])
+def listCurrentAuctions(keyword):
+    """Listar os leilões que estão a decorrer"""
+    try:
+        auctions = db.listAuctions(keyword)
+    except Exception as e:
+        print(e)
+        return jsonify({'erro': 401})
+    return jsonify(auctions)
 
 
 @app.route('/')

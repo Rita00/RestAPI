@@ -18,15 +18,15 @@ def signUp():
     id = None
     try:
         content = request.json
-        id = db.signUp(
+        id = db.insert(
             'participant',
-            'username, email, password',
-            f"{content['username']}, {content['email']}, {content['password']}",
+            'person_username, person_email, person_password',
+            f"'{content['username']}', '{content['email']}', '{content['password']}'",
             'person_id',
             f"person_username='{content['username']}'"
-        
         )
     except Exception as e:
+        db.connection.commit()
         print(e)
         return jsonify({'erro': 401})
     print(f"Added user #{id}")
@@ -50,15 +50,19 @@ def createAuction():
     id = None
     try:
         content = request.json
-        token = random.randint(0, 10000)  # TODO nao é definitivo
-        id = db.signUp(content['username'], content['email'], content['password'], token)
+        id = db.signUp(
+            'participant',
+            'username, email, password',
+            f"{content['username']}, {content['email']}, {content['password']}",
+            'person_id',
+            f"person_username='{content['username']}'"
+        )
     except Exception as e:
         print(e)
         return jsonify({'erro': 401})
-    print(f"Added auction #{id}")
+    print(f"Added user #{id}")
     return jsonify({'userId': id})
 
-{“artigoId”: artigoId1, “precoMinimo”: preco, “titulo”: “Titulo do Novo Leilão”, “descricao”: “Descrição do Novo Leilão”, (...)}
 @app.route('/')
 @app.route('/home')
 def home():

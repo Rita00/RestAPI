@@ -29,8 +29,19 @@ INSERT INTO feed_message (message_id, type, participant_person_id, auction_id, m
 VALUES (3, 'clarification', 14, 3, 'Teste detalhes leilão e várias mensagens2', date('now'));
 INSERT INTO feed_message (message_id, type, participant_person_id, auction_id, message_message, message_message_date)
 VALUES (4, 'question', 14, 1, 'Teste detalhes leilão e várias mensagens3', date('now'));
+INSERT INTO feed_message (message_id, type, participant_person_id, auction_id, message_message, message_message_date)
+VALUES (5, 'question', 14, 1, 'Teste detalhes leilão e mensagens', date('now'));
+INSERT INTO bid(bid_date, price, participant_person_id, auction_id)
+VALUES(now(),30.00,17,1);
+INSERT INTO bid(bid_date, price, participant_person_id, auction_id)
+VALUES(now(),30.50,17,1);
 
 SELECT id, end_date, description, message_id, message_message FROM auction, textual_description, feed_message WHERE auction.id = textual_description.auction_id AND feed_message.auction_id = auction.id;
+SELECT id, person_username FROM bid, participant WHERE bid.participant_person_id = participant.person_id;
+SELECT message_id, message_message FROM feed_message WHERE auction_id = '1';
+SELECT * FROM bid;
+SELECT id, person_username FROM bid, participant WHERE bid.participant_person_id = participant.person_id AND auction_id = 1;
+
 -- Mostrar leiloes em que um utilizador tenha atividade
 INSERT INTO auction (code, min_price, begin_date, end_date, participant_person_id)
 VALUES (111111111, 10.00, '2021-01-01T00:00:00', '2022-12-30T23:59:59', 15);

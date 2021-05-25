@@ -76,7 +76,7 @@ def createAuction(username):
             """
         )
         # conta as versoes existentes
-        version = 1+db.selectOne(
+        version = 1 + db.selectOne(
             f"""
             SELECT count(*)
             FROM textual_description
@@ -108,7 +108,8 @@ def listCurrentAuctions(keyword):
         return jsonify({'erro': 401})
     return jsonify(auctions)
 
-@app.route(f'/dbproj/user/<userId>/leiloes', methods=['GET'])        #TODO username
+
+@app.route(f'/dbproj/user/<userId>/leiloes', methods=['GET'])  # TODO username
 def listUserAuctions(username):
     """Listar os leilões em que o utilizador tenha uma atividade"""
     try:
@@ -138,9 +139,10 @@ def listUserAuctions(username):
         db.connection.rollback()
         print(e)
         return jsonify({'erro': 401})
-    return jsonify(auctions) #TODO ajeitar isto
+    return jsonify(auctions)  # TODO ajeitar isto
 
-@app.route(f'/dbproj/licitar/<leilaoId>/<licictacao>', methods=['POST'])        #TODO leilaoId
+
+@app.route(f'/dbproj/licitar/<leilaoId>/<licictacao>', methods=['POST'])  # TODO leilaoId
 def bid(username, auctionID, price):
     """Listar os leilões em que o utilizador tenha uma atividade"""
     try:
@@ -168,9 +170,16 @@ def bid(username, auctionID, price):
         return jsonify({'erro': 401})
     return jsonify({'licitacaoId': person_bid})
 
-@app.route('/dbproj/leiloes/<leilaoId>', methods=['GET'])
+
+@app.route('/dbproj/leilao/<leilaoId>', methods=['GET'])
 def detailsAuction(leilaoId):
     """Consultar os detalhes de um determinado leilão"""
+    try:
+        details = db.detailsAuction(leilaoId)
+    except Exception as e:
+        print(e)
+        return jsonify({'erro': 401})
+    return jsonify(details)
 
 
 @app.route('/')

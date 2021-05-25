@@ -107,19 +107,30 @@ def listCurrentAuctions(keyword):
         print(e)
         return jsonify({'erro': 401})
     return jsonify(auctions)
-#TODO username
-@app.route(f'/dbproj/user/xxx/leiloes', methods=['GET'])
+
+@app.route(f'/dbproj/user/xxx/leiloes', methods=['GET'])        #TODO username
 def listUserAuctions(username):
     """Listar os leilões em que o utilizador tenha uma atividade"""
     try:
         auctions = db.selectAll(
-            """
-            SELECT DISTINCT a.id, t.description
-            FROM auction a, textual_description t, bid b, participant p
-            WHERE b.participant_person_id=p.person_id and a.id=b.auction_id and a.id=t.auction_id and t.version=(
-                SELECT MAX(t.version)
-                FROM auction a, textual_description t
-                WHERE a.id=t.auction_id and a.id=4
+            f"""
+            SELECT t.auction_id, t.description
+            FROM textual_description t
+            WHERE (t.auction_id,t.version) IN (
+                SELECT DISTINCT a.id, MAX(t.version)
+                FROM auction a,
+                     textual_description t
+                WHERE a.id = t.auction_id
+                GROUP BY a.id
+                HAVING a.id IN (
+                    SELECT b.auction_id
+                    FROM bid b
+                    WHERE b.participant_person_id IN (
+                        SELECT p.person_id
+                        FROM participant p
+                        WHERE p.person_username LIKE '{username}'
+                    )
+                )
             );
             """
         )

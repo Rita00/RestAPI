@@ -135,6 +135,7 @@ def listUserAuctions(username):
             """
         )
     except Exception as e:
+        db.connection.rollback()
         print(e)
         return jsonify({'erro': 401})
     return jsonify(auctions) #TODO ajeitar isto

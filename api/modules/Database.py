@@ -22,33 +22,30 @@ class Database(object):
             database=self.database
         )
 
-    def insert(self, table, columns, values, returnVal=None, returnCond=None):
+    def insert(self, sql, return_sql=None):
         """ Insere na base de dados"""
         cursor = self.connection.cursor()
-        cursor.execute(
-            f"""
-            INSERT INTO {table}({columns})
-            VALUES ({values});
-            """
-        )
+        cursor.execute(sql)
         self.connection.commit()
-        if (returnVal != None):
-            cursor.execute(f"SELECT {returnVal} FROM {table} WHERE {returnCond};")
+        if (return_sql != None):
+            cursor.execute(return_sql)
         res = cursor.fetchone()[0]
         cursor.close()
         return res
 
-    def select(self, columns, tables, cond):
+    def selectOne(self, sql):
         """ Seleciona na base de dados"""
         cursor = self.connection.cursor()
-        cursor.execute(
-            f"""
-            SELECT {columns}
-            FROM {tables}
-            WHERE {cond}
-            """
-        )
+        cursor.execute(sql)
         res = cursor.fetchone()[0]
+        cursor.close()
+        return res
+
+    def selectAll(self,sql):
+        """ Seleciona na base de dados"""
+        cursor = self.connection.cursor()
+        cursor.execute(sql)
+        res = cursor.fetchall()
         cursor.close()
         return res
 

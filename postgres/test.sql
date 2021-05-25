@@ -37,40 +37,6 @@ VALUES(now(),40.00,17,4);
 INSERT INTO bid(bid_date, price, participant_person_id, auction_id)
 VALUES(now(),40.00,17,5);
 
-SELECT DISTINCT a.id, t.description, p.person_username
-FROM auction a, textual_description t, bid b, participant p
-WHERE (a.id,t.version) IN (
-        SELECT DISTINCT a.id, MAX(t.version)
-        FROM auction a, textual_description t
-        WHERE a.id=t.auction_id AND (
-            a.id IN (
-                SELECT DISTINCT b.auction_id
-                FROM bid b
-                WHERE b.participant_person_id=p.person_id
-            )
-        )
-        GROUP BY a.id
-    )
-    AND b.participant_person_id = (
-        SELECT p2.person_id
-        FROM participant p2
-        WHERE p2.person_username LIKE 'dylan2'
-    )
-GROUP BY a.id, t.description, person_username;
-
-
-SELECT DISTINCT a.id, MAX(t.version)
-FROM auction a, textual_description t
-WHERE a.id=t.auction_id
-GROUP BY a.id;
-
-SELECT p2.person_id
-FROM participant p2
-WHERE p2.person_username LIKE 'dylan2';
-
-SELECT DISTINCT b.auction_id
-FROM bid b;
-
 SELECT t.auction_id, t.description
 FROM textual_description t
 WHERE (t.auction_id,t.version) IN (
@@ -89,3 +55,8 @@ WHERE (t.auction_id,t.version) IN (
         )
     )
 );
+
+SELECT b.id, person_username
+FROM bid b, participant p
+WHERE b.participant_person_id=p.person_id
+ORDER BY b.bid_date DESC;

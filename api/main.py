@@ -139,33 +139,33 @@ def listUserAuctions(username):
         return jsonify({'erro': 401})
     return jsonify(auctions) #TODO ajeitar isto
 
-@app.route(f'/dbproj/licitar/<leilaoId>/<licictacao>', methods=['GET'])        #TODO leilaoId
-def bid(username,auctionID,price):
+@app.route(f'/dbproj/licitar/<leilaoId>/<licictacao>', methods=['POST'])        #TODO leilaoId
+def bid(username, auctionID, price):
     """Listar os leilões em que o utilizador tenha uma atividade"""
     try:
-        personID = db.selectOne(
+        person_id = db.selectOne(
             f"""
             SELECT person_id
             FROM participant
             WHERE person_username={username};
             """
         )
-        bid = db.insert(
+        person_bid = db.insert(
             f"""
             INSERT INTO bid(bid_date, price, participant_person_id, auction_id)
-            VALUES(now(),{price},{personID},{auctionID});
+            VALUES(now(),{price},{person_id},{auctionID});
             """,
-            """
+            f"""
             SELECT b.id
             FROM bid b, participant p
-            WHERE b.participant_person_id=p.person_id
+            WHERE b.participant_person_id={person_id}
             ORDER BY b.bid_date DESC;
             """
         )
     except Exception as e:
         print(e)
         return jsonify({'erro': 401})
-    return jsonify({'licitacaoId': bid})
+    return jsonify({'licitacaoId': person_bid})
 
 @app.route('/')
 @app.route('/home')

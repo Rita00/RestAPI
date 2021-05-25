@@ -88,6 +88,11 @@ def listCurrentAuctions(keyword):
     return jsonify(auctions)
 
 
+@app.route('/dbproj/leiloes/<leilaoId>', methods=['GET'])
+def detailsAuction(leilaoId):
+    """Consultar os detalhes de um determinado leilão"""
+
+
 @app.route('/')
 @app.route('/home')
 def home():

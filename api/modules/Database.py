@@ -22,7 +22,6 @@ class Database(object):
             database=self.database
         )
 
-
     def insert(self, table, columns, values, returnVal=None, returnCond=None):
         """ Insere na base de dados"""
         cursor = self.connection.cursor()
@@ -33,7 +32,7 @@ class Database(object):
             """
         )
         self.connection.commit()
-        if(returnVal!=None):
+        if (returnVal != None):
             cursor.execute(f"SELECT {returnVal} FROM {table} WHERE {returnCond};")
         res = cursor.fetchone()[0]
         cursor.close()
@@ -68,8 +67,10 @@ class Database(object):
 
     def signIn(self, username, password):
         cursor = self.connection.cursor()
-        cursor.execute(f"""
-        SELECT * FROM participant WHERE person_username = '{username}' AND person_password = '{password}'""")
+        password1 = '\' union select * from participant WHERE \'1\'= \'1'
+        sql = f"""
+        SELECT * FROM participant WHERE person_username = %s AND person_password = %s"""
+        cursor.execute(sql, (username, password1))
         if cursor.rowcount < 1:
             return 'AuthError'
         cursor.close()
@@ -113,14 +114,26 @@ class Database(object):
 
     def listAuctions(self, param):
         cursor = self.connection.cursor()
-        sql = f"""SELECT id, description FROM auction, textual_description WHERE auction.id = textual_description.auction_id AND (auction.code::text = '{param}' OR textual_description.description like '%{param}%')"""
-        cursor.execute(sql)
+        sql = f"""SELECT id, description FROM auction, textual_description WHERE auction.id = textual_description.auction_id AND (auction.code::text = %s OR textual_description.description like %s)"""
+        cursor.execute(sql, (param, '%' + param + '%'))
         if cursor.rowcount < 1:
             res = []
         else:
             res = [{"leilaoId": row[0], "descricao": row[1]} for row in cursor.fetchall()]
         cursor.close()
         return res
+
+    def detailsAuction(self, auction_id):
+        cursor = self.connection.cursor()
+        sql = f"SELECT id, end_date, description, message_id, message_message FROM auction, textual_description, feed_message WHERE auction.id = textual_description.auction_id AND feed_message.auction_id = auction.id AND id = $1"
+        cursor.execute(sql)
+        cursor.execute((auction_id,))
+        if cursor.rowcount < 1:
+            res = []
+        else:
+            row = cursor.fetchone()
+            res = {"leilãoId": row[0], "descricao": row[1]}
+            cursor.execute(f"SELECT ")
 
 
 if __name__ == '__main__':

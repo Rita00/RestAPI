@@ -1,6 +1,9 @@
 # imports
+from re import A
 from flask import Flask, request, jsonify
+import datetime
 import jwt
+from functools import wraps
 import platform
 import os
 import random
@@ -10,6 +13,58 @@ import modules.Database as database
 # config
 global db
 app = Flask(__name__)
+
+def encode_auth_token(user_id):
+    """
+    Generates the Auth Token
+    :return: string
+    """
+    try:
+        payload = {
+            'exp': datetime.datetime.utcnow() + datetime.timedelta(hours=1),
+            'iat': datetime.datetime.utcnow(),
+            'sub': user_id
+        }
+        return jwt.encode(
+            payload,
+            b'\x13\xfc\xe2\x92\x0eE4\xd2\x92\xdd\xd4\x11np\xc8\x0c+<\xb1\xe8i\xf0\xc4O',
+            algorithm='HS256'
+        )
+    except Exception as e:
+        return e
+
+
+def decode_auth_token(f):
+    """
+    Decodes the auth token
+    :param auth_token:
+    :return: integer|string
+    """
+    @wraps(f)   #why? -> https://www.geeksforgeeks.org/python-functools-wraps-function/
+    def inner(*args, **kwargs):
+
+        if 'authToken' not in request.headers or not request.headers['authToken']:
+            return jsonify({'erro': 401, 'message' : 'Token is missing!!!'})
+            
+        
+        authToken = request.headers['authToken']
+
+        try:
+            payload = jwt.decode(
+                authToken,
+                b'\x13\xfc\xe2\x92\x0eE4\xd2\x92\xdd\xd4\x11np\xc8\x0c+<\xb1\xe8i\xf0\xc4O',
+                algorithm='HS256'
+            )
+            username = payload['sub']
+        except jwt.ExpiredSignatureError:
+            return jsonify({'erro': 401, 'message' : 'Signature expired. Please log in again.'})
+
+        except jwt.InvalidTokenError:
+            return jsonify({'erro': 401, 'message' : 'Invalid token. Please log in again.'}) 
+
+        return f(username, *args, **kwargs)
+
+    return inner
 
 
 @app.route('/dbproj/user', methods=['POST'])
@@ -42,11 +97,17 @@ def signIn():
     """Login do utilizador"""
     try:
         content = request.json
-        authToken = db.signIn(content['username'], content['password'])
+        if db.signIn(content['username'], content['password']):
+            token = encode_auth_token(content['username'])
+            return jsonify({'authToken': token})
+
+        #wrong credentials
+        return jsonify({'erro': 401, 'message': 'Wrong credentials'})
+
     except Exception as e:
         print(e)
-        return jsonify({'erro': 401})
-    return jsonify({'authToken': authToken})
+        return jsonify({'erro': 401, 'message': e})
+   
 
 
 @app.route('/dbproj/leilao', methods=['POST'])
@@ -189,11 +250,21 @@ def home():
 
 
 if __name__ == '__main__':
+    '''
     BIDYOURAUCTION_USER = os.environ.get('BIDYOURAUCTION_USER')
     BIDYOURAUCTION_PASSWORD = os.environ.get('BIDYOURAUCTION_PASSWORD')
     BIDYOURAUCTION_HOST = os.environ.get('BIDYOURAUCTION_HOST')
     BIDYOURAUCTION_PORT = os.environ.get('BIDYOURAUCTION_PORT')
     BIDYOURAUCTION_DB = os.environ.get('BIDYOURAUCTION_DB')
+    '''
+
+    BIDYOURAUCTION_HOST = "ec2-34-254-69-72.eu-west-1.compute.amazonaws.com"
+    BIDYOURAUCTION_PORT = "5432"
+    BIDYOURAUCTION_DB = "das7ket3c5aarn"
+    BIDYOURAUCTION_PASSWORD = "eb4ada6829ffce0e0f516062ea258ca6aa14d2fd85ea907ad910aa62eaf1412a"
+    BIDYOURAUCTION_USER = "vtxuzrplfviiht"
+    
+
     print(BIDYOURAUCTION_USER, BIDYOURAUCTION_PASSWORD, BIDYOURAUCTION_HOST, BIDYOURAUCTION_PORT, BIDYOURAUCTION_DB)
     db = database.Database(
         user=BIDYOURAUCTION_USER,

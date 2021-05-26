@@ -64,10 +64,10 @@ class Database(object):
 
     def signIn(self, username, password):
         cursor = self.connection.cursor()
-        password1 = '\' union select * from participant WHERE \'1\'= \'1'
-        sql = f"""
-        SELECT * FROM participant WHERE person_username = %s AND person_password = %s"""
-        cursor.execute(sql, (username, password1))
+        # Exemplo de sql injection
+        # password1 = '\' union select * from participant WHERE \'1\'= \'1'
+        sql = 'SELECT * FROM participant WHERE person_username = %s AND person_password = %s'
+        cursor.execute(sql, (username, password))
         if cursor.rowcount < 1:
             return 'AuthError'
         cursor.close()
@@ -111,7 +111,7 @@ class Database(object):
 
     def listAuctions(self, param):
         cursor = self.connection.cursor()
-        sql = f"""SELECT id, description FROM auction, textual_description WHERE auction.id = textual_description.auction_id AND (auction.code::text = %s OR textual_description.description like %s)"""
+        sql = 'SELECT id, description FROM auction, textual_description WHERE auction.id = textual_description.auction_id AND (auction.code::text = %s OR textual_description.description like %s)'
         cursor.execute(sql, (param, '%' + param + '%'))
         if cursor.rowcount < 1:
             res = []
@@ -122,17 +122,17 @@ class Database(object):
 
     def detailsAuction(self, auction_id):
         cursor = self.connection.cursor()
-        sqlAuction = f"SELECT id, end_date, description FROM auction, textual_description WHERE auction.id = textual_description.auction_id AND id = %s"
+        sqlAuction = 'SELECT id, end_date, description FROM auction, textual_description WHERE auction.id = textual_description.auction_id AND id = %s'
         cursor.execute(sqlAuction, (auction_id, ))
         if cursor.rowcount < 1:
             res = []
         else:
             row = cursor.fetchone()
             res = {"leilãoId": row[0], "dataFim": row[1], "descricao": row[2]}
-            sqlMessages = f"SELECT message_id, message_message FROM feed_message WHERE auction_id = %s"
+            sqlMessages = 'SELECT message_id, message_message FROM feed_message WHERE auction_id = %s'
             cursor.execute(sqlMessages, (auction_id, ))
             res['mensagens'] = [{"mensagemId": row[0], "mensagem": row[1]} for row in cursor.fetchall()]
-            sqlBids = f"SELECT id, person_username FROM bid, participant WHERE bid.participant_person_id = participant.person_id AND auction_id = %s"
+            sqlBids = 'SELECT id, person_username FROM bid, participant WHERE bid.participant_person_id = participant.person_id AND auction_id = %s'
             cursor.execute(sqlBids, (auction_id, ))
             res['licitacoes'] = [{"licitacaoId": row[0], "nomePessoa": row[1]} for row in cursor.fetchall()]
         return res

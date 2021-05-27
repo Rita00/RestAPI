@@ -158,6 +158,15 @@ def createAuction(username):
     print(f"Added user #{id}")
     return jsonify({'leilãoId': id})
 
+@app.route('/dbproj/leiloes', methods=['GET'])
+def listAllAuctions():
+    """Listar Todos os leilões existentes"""
+    try:
+        auctions = db.listAllAuctions()
+    except Exception as e:
+        print(e)
+        return jsonify({'erro': 401})
+    return jsonify(auctions)
 
 @app.route('/dbproj/leiloes/<keyword>', methods=['GET'])
 def listCurrentAuctions(keyword):

@@ -73,6 +73,17 @@ class Database(object):
         cursor.close()
         return True
 
+    def listAllAuctions(self):
+        cursor = self.connection.cursor()
+        sql = 'SELECT id, description FROM auction, textual_description WHERE auction.id = textual_description.auction_id'
+        cursor.execute(sql)
+        if cursor.rowcount < 1:
+            res = []
+        else:
+            res = [{"leilaoId": row[0], "descricao": row[1]} for row in cursor.fetchall()]
+        cursor.close()
+        return res
+
     def listAuctions(self, param):
         cursor = self.connection.cursor()
         sql = 'SELECT id, description FROM auction, textual_description WHERE auction.id = textual_description.auction_id AND (auction.code::text = %s OR textual_description.description like %s)'

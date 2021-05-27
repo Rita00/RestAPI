@@ -54,7 +54,7 @@ def decode_auth_token(f):
             payload = jwt.decode(
                 authToken,
                 b'\x13\xfc\xe2\x92\x0eE4\xd2\x92\xdd\xd4\x11np\xc8\x0c+<\xb1\xe8i\xf0\xc4O',
-                algorithm='HS256'
+                algorithms=['HS256']
             )
             username = payload['sub']
         except jwt.ExpiredSignatureError:
@@ -90,6 +90,7 @@ def signIn():
         content = request.json
         if db.signIn(content['username'], content['password']):
             token = encode_auth_token(content['username'])
+
             return jsonify({'authToken': token})
 
         # wrong credentials

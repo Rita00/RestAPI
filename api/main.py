@@ -14,6 +14,7 @@ import modules.Database as database
 global db
 app = Flask(__name__)
 
+
 def encode_auth_token(user_id):
     """
     Generates the Auth Token
@@ -40,13 +41,13 @@ def decode_auth_token(f):
     :param auth_token:
     :return: integer|string
     """
-    @wraps(f)   #why? -> https://www.geeksforgeeks.org/python-functools-wraps-function/
+
+    @wraps(f)  # why? -> https://www.geeksforgeeks.org/python-functools-wraps-function/
     def inner(*args, **kwargs):
 
         if 'authToken' not in request.headers or not request.headers['authToken']:
-            return jsonify({'erro': 401, 'message' : 'Token is missing!!!'})
-            
-        
+            return jsonify({'erro': 401, 'message': 'Token is missing!!!'})
+
         authToken = request.headers['authToken']
 
         try:
@@ -57,10 +58,10 @@ def decode_auth_token(f):
             )
             username = payload['sub']
         except jwt.ExpiredSignatureError:
-            return jsonify({'erro': 401, 'message' : 'Signature expired. Please log in again.'})
+            return jsonify({'erro': 401, 'message': 'Signature expired. Please log in again.'})
 
         except jwt.InvalidTokenError:
-            return jsonify({'erro': 401, 'message' : 'Invalid token. Please log in again.'}) 
+            return jsonify({'erro': 401, 'message': 'Invalid token. Please log in again.'})
 
         return f(username, *args, **kwargs)
 
@@ -73,17 +74,7 @@ def signUp():
     id = None
     try:
         content = request.json
-        id = db.insert(
-            f"""
-            INSERT INTO participant (person_username, person_email, person_password)
-            VALUES '{content['username']}', '{content['email']}', '{content['password']}';
-            """,
-            f"""
-            SELECT person_id
-            FROM participant
-            WHERE person_username='{content['username']}';
-            """
-        )
+        id = db.signUp(content['username'], content['email'], content['password'])
     except Exception as e:
         db.connection.rollback()
         print(e)
@@ -101,13 +92,12 @@ def signIn():
             token = encode_auth_token(content['username'])
             return jsonify({'authToken': token})
 
-        #wrong credentials
+        # wrong credentials
         return jsonify({'erro': 401, 'message': 'Wrong credentials'})
 
     except Exception as e:
         print(e)
         return jsonify({'erro': 401, 'message': e})
-   
 
 
 @app.route('/dbproj/leilao', methods=['POST'])
@@ -116,47 +106,14 @@ def createAuction(username):
     id = None
     try:
         content = request.json
-        # vai buscar o criador da eleição
-        person_id = db.selectOne(
-            f"""
-            SELECT person_id
-            FROM participant
-            WHERE person_username={username};
-            """
-        )
-        # insere o leilão
-        id = db.insert(
-            f"""
-            INSERT INTO auction(code, min_price, begin_date, end_date, participant_person_id)
-            VALUES ({content['artigoId']}, {content['precoMinimo']},'{content['dataInicio']}','{content['dataFim']}',{person_id});
-            """,
-            f"""
-            SELECT id
-            FROM auction
-            WHERE code={content['artigoId']};
-            """
-        )
-        # conta as versoes existentes
-        version = 1 + db.selectOne(
-            f"""
-            SELECT count(*)
-            FROM textual_description
-            WHERE auction_id={id};
-            """
-        )
-        # insere os dados textuais do leilão
-        db.insert(
-            f"""
-            INSERT INTO textual_description(version, title, description, alteration_date, auction_id)
-            VALUES ({version},'{content['titulo']}', '{content['descricao']}', NOW(),{id});
-            """
-        )
+        id = db.createAuction(username,content['artigoId'], content['precoMinimo'], content['dataInicio'], content['dataFim'],content['titulo'],content['descricao'])
     except Exception as e:
         db.connection.commit()
         print(e)
         return jsonify({'erro': 401})
-    print(f"Added user #{id}")
+    print(f"Added auction #{id}")
     return jsonify({'leilãoId': id})
+
 
 @app.route('/dbproj/leiloes', methods=['GET'])
 def listAllAuctions():
@@ -167,6 +124,7 @@ def listAllAuctions():
         print(e)
         return jsonify({'erro': 401})
     return jsonify(auctions)
+
 
 @app.route('/dbproj/leiloes/<keyword>', methods=['GET'])
 def listCurrentAuctions(keyword):
@@ -183,28 +141,7 @@ def listCurrentAuctions(keyword):
 def listUserAuctions(username):
     """Listar os leilões em que o utilizador tenha uma atividade"""
     try:
-        auctions = db.selectAll(
-            f"""
-            SELECT t.auction_id, t.description
-            FROM textual_description t
-            WHERE (t.auction_id,t.version) IN (
-                SELECT DISTINCT a.id, MAX(t.version)
-                FROM auction a,
-                     textual_description t
-                WHERE a.id = t.auction_id
-                GROUP BY a.id
-                HAVING a.id IN (
-                    SELECT b.auction_id
-                    FROM bid b
-                    WHERE b.participant_person_id IN (
-                        SELECT p.person_id
-                        FROM participant p
-                        WHERE p.person_username LIKE '{username}'
-                    )
-                )
-            );
-            """
-        )
+        auctions = db.listUserAuctions(username)
     except Exception as e:
         db.connection.rollback()
         print(e)
@@ -213,32 +150,14 @@ def listUserAuctions(username):
 
 
 @app.route(f'/dbproj/licitar/<leilaoId>/<licictacao>', methods=['POST'])  # TODO leilaoId
-def bid(username, auctionID, price):
+def bid(username, auction_id, price):
     """Listar os leilões em que o utilizador tenha uma atividade"""
     try:
-        person_id = db.selectOne(
-            f"""
-            SELECT person_id
-            FROM participant
-            WHERE person_username={username};
-            """
-        )
-        person_bid = db.insert(
-            f"""
-            INSERT INTO bid(bid_date, price, participant_person_id, auction_id)
-            VALUES(now(),{price},{person_id},{auctionID});
-            """,
-            f"""
-            SELECT b.id
-            FROM bid b, participant p
-            WHERE b.participant_person_id={person_id}
-            ORDER BY b.bid_date DESC;
-            """
-        )
+        bid_id = db.bid(username,auction_id,price)
     except Exception as e:
         print(e)
         return jsonify({'erro': 401})
-    return jsonify({'licitacaoId': person_bid})
+    return jsonify({'licitacaoId': bid_id})
 
 
 @app.route('/dbproj/leilao/<leilaoId>', methods=['GET'])
@@ -272,7 +191,6 @@ if __name__ == '__main__':
     BIDYOURAUCTION_DB = "das7ket3c5aarn"
     BIDYOURAUCTION_PASSWORD = "eb4ada6829ffce0e0f516062ea258ca6aa14d2fd85ea907ad910aa62eaf1412a"
     BIDYOURAUCTION_USER = "vtxuzrplfviiht"
-    
 
     print(BIDYOURAUCTION_USER, BIDYOURAUCTION_PASSWORD, BIDYOURAUCTION_HOST, BIDYOURAUCTION_PORT, BIDYOURAUCTION_DB)
     db = database.Database(

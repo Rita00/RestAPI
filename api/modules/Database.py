@@ -73,13 +73,13 @@ class Database(object):
                         SELECT person_id
                         FROM participant
                         WHERE person_username=%s;
-                        """,tuple(username))
+                        """, tuple(username))
         person_id = cursor.fetchone()[0]
         # insere o leilão
         cursor.execute("""
                         INSERT INTO auction(code, min_price, begin_date, end_date, participant_person_id)
                         VALUES (%s,%s,%s,%s,%s);
-                        """, (article_id,min_price, begin_date, end_date, person_id))
+                        """, (article_id, min_price, begin_date, end_date, person_id))
         cursor.execute("""
                         SELECT id
                         FROM auction
@@ -222,6 +222,7 @@ class Database(object):
 
         isBanned = 'SELECT isbanned FROM participant WHERE person_username = %s'
         cursor.execute(isBanned, (username,))
+        isBanned = cursor.fetchone()[0]
         if isBanned:
             cursor.close()
             return 'banned'
@@ -269,14 +270,31 @@ class Database(object):
         cursor.close()
         return res
 
-    def editAuction(self, auction_id):
+    def editAuction(self, auction_id, title, description, username):
         cursor = self.connection.cursor()
+        # Check if username is the creator of auction
+        isCreator = 'SELECT * FROM auction WHERE participant_person_id = %s'
+        cursor.execute(isCreator, (username,))
+        if cursor.rowcount < 1:
+            cursor.close()
+            return "notCreator"
+
         getLastVersion = 'SELECT count(*) FROM textual_description WHERE auction_id = %s'
         cursor.execute(getLastVersion, (auction_id,))
         lastVersion = cursor.fetchall()[0]
         sqlAuction = 'INSERT INTO textual_description(version, title, description, alteration_date, auction_id) VALUES(%s, %s, %s, %s, %s)'
-        cursor.execute(sqlAuction, ())
+        cursor.execute(sqlAuction, (lastVersion + 1, title, description, 'now()', auction_id))
+
+        # Error on insert
+        if cursor.rowcount < 1:
+            cursor.close()
+            return False
+        cursor.close()
         self.connection.commit()
+
+        # Get complete information about auction
+        auctionInfo = 'SELECT id, code, min_price, begin_date, end_date, person_username, title, description WHERE '
+        return True
 
 
 if __name__ == '__main__':

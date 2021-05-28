@@ -194,10 +194,16 @@ def writeFeedMessage(username, leilaoId):
 
 
 @app.route('/dbproj/leilao/<leilaoId>', methods=['PUT'])
-def editAuction(leilaoId):
+@decode_auth_token
+def editAuction(username, leilaoId):
     """Editar propriedades de um leilão"""
     try:
-        db.editAuction(leilaoId)
+        content = request.json
+        res = db.editAuction(leilaoId, content["titulo"], content["descricao"], username)
+        if res == "notCreator":
+            return jsonify({'erro': "User is not the auction's creator"})
+        elif res == True:
+            return jsonify({"leilaoId": leilaoId, "descricao": content["descricao"], })
     except Exception as e:
         print(e)
         return jsonify({'erro': 401})

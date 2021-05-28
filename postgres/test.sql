@@ -88,3 +88,9 @@ ORDER BY b.bid_date DESC;
 SELECT * FROM participant WHERE person_username = 'Rita' AND person_password = 'rita.lapao00@mail.com';
 select * from participant;
 SELECT isbanned FROM participant WHERE person_username = 'username';
+
+SELECT id, code, min_price, begin_date, end_date, person_username, title, description
+FROM auction, participant, textual_description
+WHERE auction.participant_person_id = participant.person_id AND auction.id = textual_description.auction_id;
+
+SELECT isbanned FROM participant WHERE person_username = 'Rita'

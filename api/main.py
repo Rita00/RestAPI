@@ -45,12 +45,10 @@ def decode_auth_token(f):
     @wraps(f)  # why? -> https://www.geeksforgeeks.org/python-functools-wraps-function/
     def inner(*args, **kwargs):
 
-        content = request.json
-
-        if 'authToken' not in content.keys() or not content['authToken']:
+        if 'Token' not in request.headers or not request.headers['Token']:
             return jsonify({'erro': 401, 'message': 'Token is missing!!!'})
 
-        authToken = content['authToken']
+        authToken = request.headers['Token']
 
         try:
             payload = jwt.decode(

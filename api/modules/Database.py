@@ -217,9 +217,14 @@ class Database(object):
         cursor.execute(sql, (username, password))
         if cursor.rowcount < 1:
             cursor.close()
-
             return False
             # return 'AuthError'
+
+        isBanned = 'SELECT isbanned FROM participant WHERE person_username = %s'
+        cursor.execute(isBanned, (username,))
+        if isBanned:
+            cursor.close()
+            return 'banned'
 
         cursor.close()
         return True
@@ -268,9 +273,10 @@ class Database(object):
         cursor = self.connection.cursor()
         getLastVersion = 'SELECT count(*) FROM textual_description WHERE auction_id = %s'
         cursor.execute(getLastVersion, (auction_id,))
-        lastVersion = cursor.fetchall()
+        lastVersion = cursor.fetchall()[0]
         sqlAuction = 'INSERT INTO textual_description(version, title, description, alteration_date, auction_id) VALUES(%s, %s, %s, %s, %s)'
         cursor.execute(sqlAuction, ())
+        self.connection.commit()
 
 
 if __name__ == '__main__':

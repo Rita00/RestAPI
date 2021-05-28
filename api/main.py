@@ -90,11 +90,15 @@ def signIn():
     """Login do utilizador"""
     try:
         content = request.json
-        if db.signIn(content['username'], content['password']):
+        correctSignIn = db.signIn(content['username'], content['password'])
+        if correctSignIn == True:
             token = encode_auth_token(content['username'])
 
             return jsonify({'authToken': token})
 
+        # Is Banned
+        elif 'banned' == correctSignIn:
+            return jsonify({'erro': 'User is banned'})
         # wrong credentials
         return jsonify({'erro': 401, 'message': 'Wrong credentials'})
 
@@ -109,7 +113,8 @@ def createAuction(username):
     id = None
     try:
         content = request.json
-        id = db.createAuction(username,content['artigoId'], content['precoMinimo'], content['dataInicio'], content['dataFim'],content['titulo'],content['descricao'])
+        id = db.createAuction(username, content['artigoId'], content['precoMinimo'], content['dataInicio'],
+                              content['dataFim'], content['titulo'], content['descricao'])
     except Exception as e:
         db.connection.commit()
         print(e)
@@ -156,7 +161,7 @@ def listUserAuctions(username):
 def bid(username, auction_id, price):
     """Listar os leilões em que o utilizador tenha uma atividade"""
     try:
-        bid_id = db.bid(username,auction_id,price)
+        bid_id = db.bid(username, auction_id, price)
     except Exception as e:
         print(e)
         return jsonify({'erro': 401})
@@ -187,9 +192,15 @@ def writeFeedMessage(username, leilaoId):
         return jsonify({'erro': 401})
     return jsonify({'messageId': message_id})
 
+
 @app.route('/dbproj/leilao/<leilaoId>', methods=['PUT'])
 def editAuction(leilaoId):
     """Editar propriedades de um leilão"""
+    try:
+        db.editAuction(leilaoId)
+    except Exception as e:
+        print(e)
+        return jsonify({'erro': 401})
 
 
 @app.route('/')

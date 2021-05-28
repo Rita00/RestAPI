@@ -84,3 +84,7 @@ SELECT b.id, person_username
 FROM bid b, participant p
 WHERE b.participant_person_id=p.person_id
 ORDER BY b.bid_date DESC;
+
+SELECT * FROM participant WHERE person_username = 'Rita' AND person_password = 'rita.lapao00@mail.com';
+select * from participant;
+SELECT isbanned FROM participant WHERE person_username = 'username';

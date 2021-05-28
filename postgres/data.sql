@@ -17,6 +17,8 @@ CREATE TABLE auction (
 	iscancelled		 BOOL NOT NULL DEFAULT false,
 	isactive		 BOOL NOT NULL DEFAULT true,
 	participant_person_id INTEGER NOT NULL,
+	maxbid		 FLOAT(8),
+	winner		 BIGINT,
 	PRIMARY KEY(id)
 );
 
@@ -31,10 +33,10 @@ CREATE TABLE bid (
 );
 
 CREATE TABLE notification (
-	bid_id		 INTEGER NOT NULL,
-	message_id		 INTEGER,
+	participant_person_id INTEGER NOT NULL,
+	message_id		 SERIAL,
 	message_message	 VARCHAR(512) NOT NULL,
-	message_message_date TIMESTAMP NOT NULL,
+	message_message_date	 TIMESTAMP NOT NULL,
 	PRIMARY KEY(message_id)
 );
 
@@ -88,10 +90,12 @@ CREATE TABLE admin_participant (
 	PRIMARY KEY(participant_person_id)
 );
 
+
+ALTER TABLE auction ADD CONSTRAINT dates CHECK (end_date > now());
 ALTER TABLE auction ADD CONSTRAINT auction_fk1 FOREIGN KEY (participant_person_id) REFERENCES participant(person_id);
 ALTER TABLE bid ADD CONSTRAINT bid_fk1 FOREIGN KEY (participant_person_id) REFERENCES participant(person_id);
 ALTER TABLE bid ADD CONSTRAINT bid_fk2 FOREIGN KEY (auction_id) REFERENCES auction(id);
-ALTER TABLE notification ADD CONSTRAINT notification_fk1 FOREIGN KEY (bid_id) REFERENCES bid(id);
+ALTER TABLE notification ADD CONSTRAINT notification_fk1 FOREIGN KEY (participant_person_id) REFERENCES participant(person_id);
 ALTER TABLE feed_message ADD CONSTRAINT feed_message_fk1 FOREIGN KEY (participant_person_id) REFERENCES participant(person_id);
 ALTER TABLE feed_message ADD CONSTRAINT feed_message_fk2 FOREIGN KEY (auction_id) REFERENCES auction(id);
 ALTER TABLE feed_message ADD CONSTRAINT type CHECK (type in ('comment', 'question','clarification'));

@@ -209,6 +209,18 @@ def editAuction(username, leilaoId):
         return jsonify({'erro': 401})
 
 
+@app.route('/dbproj/leilao/checkFinish', methods=['PUT'])
+def finishAuction():
+    """Terminar leilão na data, hora e minuto marcados"""
+    try:
+        # Error on update
+        if not db.finishAuctions():
+            return jsonify({'erro': 401})
+    except Exception as e:
+        print(e)
+        return jsonify({'erro': 401})
+
+
 @app.route('/')
 @app.route('/home')
 def home():

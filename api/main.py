@@ -200,8 +200,10 @@ def editAuction(username, leilaoId):
         res = db.editAuction(leilaoId, content["titulo"], content["descricao"], username)
         if res == "notCreator":
             return jsonify({'erro': "User is not the auction's creator"})
-        elif res == True:
-            return jsonify({"leilaoId": leilaoId, "descricao": content["descricao"], })
+        # Error on insert
+        elif res == False:
+            return jsonify({'erro': 401})
+        return jsonify(res)
     except Exception as e:
         print(e)
         return jsonify({'erro': 401})

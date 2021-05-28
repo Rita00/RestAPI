@@ -194,8 +194,8 @@ class Database(object):
         # registar a mensagem
         cursor.execute("""
                         INSERT INTO feed_message(type, participant_person_id, auction_id, message_message, message_message_date)
-                        VALUES(%s,%s,%s,%s,NOW());
-                        """, (message_type, person_id, auction_id, message))
+                        VALUES(%s,%s,%s,%s,%s);
+                        """, (message_type, person_id, auction_id, message, 'NOW()'))
 
         # devolver id da mensagem
         cursor.execute("""
@@ -273,28 +273,32 @@ class Database(object):
     def editAuction(self, auction_id, title, description, username):
         cursor = self.connection.cursor()
         # Check if username is the creator of auction
-        isCreator = 'SELECT * FROM auction WHERE participant_person_id = %s'
-        cursor.execute(isCreator, (username,))
+        isCreator = 'SELECT * FROM auction JOIN participant on auction.participant_person_id = participant.person_id AND participant.person_username = %s AND auction.id = %s'
+        cursor.execute(isCreator, (username, auction_id))
         if cursor.rowcount < 1:
             cursor.close()
             return "notCreator"
 
         getLastVersion = 'SELECT count(*) FROM textual_description WHERE auction_id = %s'
         cursor.execute(getLastVersion, (auction_id,))
-        lastVersion = cursor.fetchall()[0]
+        lastVersion = cursor.fetchone()[0] + 1
+        lastVersion = lastVersion + 1
         sqlAuction = 'INSERT INTO textual_description(version, title, description, alteration_date, auction_id) VALUES(%s, %s, %s, %s, %s)'
-        cursor.execute(sqlAuction, (lastVersion + 1, title, description, 'now()', auction_id))
+        cursor.execute(sqlAuction, (lastVersion, title, description, 'now()', auction_id))
 
         # Error on insert
         if cursor.rowcount < 1:
             cursor.close()
             return False
-        cursor.close()
         self.connection.commit()
 
         # Get complete information about auction
-        auctionInfo = 'SELECT id, code, min_price, begin_date, end_date, person_username, title, description WHERE '
-        return True
+        auctionInfo = 'SELECT id, code, min_price, begin_date, end_date, person_username, title, description FROM auction, participant, textual_description WHERE auction.participant_person_id = participant.person_id AND auction.id = textual_description.auction_id AND auction.id = %s AND textual_description.version = %s'
+        cursor.execute(auctionInfo, (auction_id, lastVersion))
+        row = cursor.fetchone()
+        cursor.close()
+        res = {"leilãoId": row[0], "codigo": row[1], "precoMin": row[2], "DataIni": row[3], "DataFim": row[4], "Criador": row[5], "Titulo": row[6], "Descricao": row[7]}
+        return res
 
 
 if __name__ == '__main__':

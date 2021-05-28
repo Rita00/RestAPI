@@ -14,6 +14,7 @@ import modules.Database as database
 global db
 app = Flask(__name__)
 
+
 def encode_auth_token(user_id):
     """
     Generates the Auth Token
@@ -40,13 +41,13 @@ def decode_auth_token(f):
     :param auth_token:
     :return: integer|string
     """
-    @wraps(f)   #why? -> https://www.geeksforgeeks.org/python-functools-wraps-function/
+
+    @wraps(f)  # why? -> https://www.geeksforgeeks.org/python-functools-wraps-function/
     def inner(*args, **kwargs):
 
         if 'authToken' not in request.headers or not request.headers['authToken']:
-            return jsonify({'erro': 401, 'message' : 'Token is missing!!!'})
-            
-        
+            return jsonify({'erro': 401, 'message': 'Token is missing!!!'})
+
         authToken = request.headers['authToken']
 
         try:
@@ -57,10 +58,10 @@ def decode_auth_token(f):
             )
             username = payload['sub']
         except jwt.ExpiredSignatureError:
-            return jsonify({'erro': 401, 'message' : 'Signature expired. Please log in again.'})
+            return jsonify({'erro': 401, 'message': 'Signature expired. Please log in again.'})
 
         except jwt.InvalidTokenError:
-            return jsonify({'erro': 401, 'message' : 'Invalid token. Please log in again.'}) 
+            return jsonify({'erro': 401, 'message': 'Invalid token. Please log in again.'})
 
         return f(username, *args, **kwargs)
 
@@ -101,13 +102,12 @@ def signIn():
             token = encode_auth_token(content['username'])
             return jsonify({'authToken': token})
 
-        #wrong credentials
+        # wrong credentials
         return jsonify({'erro': 401, 'message': 'Wrong credentials'})
 
     except Exception as e:
         print(e)
         return jsonify({'erro': 401, 'message': e})
-   
 
 
 @app.route('/dbproj/leilao', methods=['POST'])
@@ -158,6 +158,7 @@ def createAuction(username):
     print(f"Added user #{id}")
     return jsonify({'leilãoId': id})
 
+
 @app.route('/dbproj/leiloes', methods=['GET'])
 def listAllAuctions():
     """Listar Todos os leilões existentes"""
@@ -167,6 +168,7 @@ def listAllAuctions():
         print(e)
         return jsonify({'erro': 401})
     return jsonify(auctions)
+
 
 @app.route('/dbproj/leiloes/<keyword>', methods=['GET'])
 def listCurrentAuctions(keyword):
@@ -252,6 +254,11 @@ def detailsAuction(leilaoId):
     return jsonify(details)
 
 
+@app.route('/dbproj/leilao/<leilaoId>', methods=['PUT'])
+def editAuction(leilaoId):
+    """Editar propriedades de um leilão"""
+
+
 @app.route('/')
 @app.route('/home')
 def home():
@@ -272,7 +279,6 @@ if __name__ == '__main__':
     BIDYOURAUCTION_DB = "das7ket3c5aarn"
     BIDYOURAUCTION_PASSWORD = "eb4ada6829ffce0e0f516062ea258ca6aa14d2fd85ea907ad910aa62eaf1412a"
     BIDYOURAUCTION_USER = "vtxuzrplfviiht"
-    
 
     print(BIDYOURAUCTION_USER, BIDYOURAUCTION_PASSWORD, BIDYOURAUCTION_HOST, BIDYOURAUCTION_PORT, BIDYOURAUCTION_DB)
     db = database.Database(

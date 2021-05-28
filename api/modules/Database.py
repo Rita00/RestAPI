@@ -1,5 +1,6 @@
 import psycopg2
 
+
 class Database(object):
     def __init__(self, user, password, host, port, database):
         self.user = user
@@ -37,7 +38,7 @@ class Database(object):
         cursor.close()
         return res
 
-    def selectAll(self,sql):
+    def selectAll(self, sql):
         """ Seleciona na base de dados"""
         cursor = self.connection.cursor()
         cursor.execute(sql)
@@ -68,7 +69,7 @@ class Database(object):
             cursor.close()
 
             return False
-            #return 'AuthError'
+            # return 'AuthError'
 
         cursor.close()
         return True
@@ -98,19 +99,28 @@ class Database(object):
     def detailsAuction(self, auction_id):
         cursor = self.connection.cursor()
         sqlAuction = 'SELECT id, end_date, description FROM auction, textual_description WHERE auction.id = textual_description.auction_id AND id = %s'
-        cursor.execute(sqlAuction, (auction_id, ))
+        cursor.execute(sqlAuction, (auction_id,))
         if cursor.rowcount < 1:
             res = []
         else:
             row = cursor.fetchone()
             res = {"leilãoId": row[0], "dataFim": row[1], "descricao": row[2]}
             sqlMessages = 'SELECT message_id, message_message FROM feed_message WHERE auction_id = %s'
-            cursor.execute(sqlMessages, (auction_id, ))
+            cursor.execute(sqlMessages, (auction_id,))
             res['mensagens'] = [{"mensagemId": row[0], "mensagem": row[1]} for row in cursor.fetchall()]
             sqlBids = 'SELECT id, person_username FROM bid, participant WHERE bid.participant_person_id = participant.person_id AND auction_id = %s'
-            cursor.execute(sqlBids, (auction_id, ))
+            cursor.execute(sqlBids, (auction_id,))
             res['licitacoes'] = [{"licitacaoId": row[0], "nomePessoa": row[1]} for row in cursor.fetchall()]
+        cursor.close()
         return res
+
+    def editAuction(self, auction_id):
+        cursor = self.connection.cursor()
+        getLastVersion = 'SELECT count(*) FROM textual_description WHERE auction_id = %s'
+        cursor.execute(getLastVersion, (auction_id,))
+        lastVersion = cursor.fetchall()
+        sqlAuction = 'INSERT INTO textual_description(version, title, description, alteration_date, auction_id) VALUES(%s, %s, %s, %s, %s)'
+        cursor.execute(sqlAuction, ())
 
 
 if __name__ == '__main__':

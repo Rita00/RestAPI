@@ -194,8 +194,8 @@ class Database(object):
         # registar a mensagem
         cursor.execute("""
                         INSERT INTO feed_message(type, participant_person_id, auction_id, message_message, message_message_date)
-                        VALUES(%s,%s,%s,%s,NOW());
-                        """, (message_type, person_id, auction_id, message))
+                        VALUES(%s,%s,%s,%s,%s);
+                        """, (message_type, person_id, auction_id, message, 'NOW()'))
 
         # devolver id da mensagem
         cursor.execute("""

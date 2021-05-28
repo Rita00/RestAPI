@@ -18543,6 +18543,7 @@ UC/12185635
     </table>
     <table id="3837" parent="3818" name="admin_auction">
       <ObjectId>12575226</ObjectId>
+      <Outdated>1</Outdated>
       <Owner>vtxuzrplfviiht</Owner>
       <StateNumber>51689432</StateNumber>
     </table>

@@ -8,6 +8,7 @@ DROP TABLE IF EXISTS textual_description CASCADE;
 DROP TABLE IF EXISTS admin_auction CASCADE;
 DROP TABLE IF EXISTS admin_user CASCADE;
 
+--TABELAS===========================================
 CREATE TABLE auction (
 	id			 	 SERIAL,
 	code			 BIGINT NOT NULL,
@@ -100,7 +101,28 @@ ALTER TABLE admin_auction ADD CONSTRAINT admin_auction_fk1 FOREIGN KEY (admin_pe
 ALTER TABLE admin_auction ADD CONSTRAINT admin_auction_fk2 FOREIGN KEY (auction_id) REFERENCES auction(id);
 ALTER TABLE admin_participant ADD CONSTRAINT admin_participant_fk1 FOREIGN KEY (admin_person_id) REFERENCES admin(person_id);
 ALTER TABLE admin_participant ADD CONSTRAINT admin_participant_fk2 FOREIGN KEY (participant_person_id) REFERENCES participant(person_id);
+--PROCEDURES=========================================
+CREATE OR REPLACE FUNCTION participant_banned()
+RETURNS TRIGGER
+LANGUAGE plpgsql
+AS $$
+BEGIN
+    --balbla TODO
+    RETURN new;
+END;
+$$;
 
+--TRIGGERS===========================================
+
+
+DROP TRIGGER IF EXISTS t_ban;
+CREATE TRIGGER tai_ban
+    AFTER INSERT ON admin_participant
+    FOR EACH ROW
+    WHEN (OLD.* IS DISTINCT FROM NEW.*)
+    EXECUTE PROCEDURE participant_banned();
+
+--DADOS TESTE===========================================
 --Pessoas teste
 INSERT INTO participant (person_id, person_username,person_email,person_password)
 VALUES (-1, 'dylanperdigao','dylanperdigao@email.com','password');
@@ -108,6 +130,10 @@ INSERT INTO participant (person_id, person_username,person_email,person_password
 VALUES (-2, 'brunofaria','brunofaria@email.com','password');
 INSERT INTO participant (person_id, person_username,person_email,person_password)
 VALUES (-3, 'ritarodrigues','ritarodrigues@email.com','password');
+INSERT INTO admin (person_id, person_username,person_email,person_password)
+VALUES (-4, 'dylanadmin','dylanadmin@email.com','password');
+INSERT INTO participant (person_id, person_username,person_email,person_password)
+VALUES (-5, 'dylantoban','dylantoban@email.com','password');
 
 --Leiloes teste
 INSERT INTO auction (id,code, min_price, begin_date, end_date, participant_person_id)

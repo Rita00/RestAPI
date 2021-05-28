@@ -96,4 +96,4 @@ WHERE auction.participant_person_id = participant.person_id AND auction.id = tex
 SELECT * FROM auction JOIN participant on auction.participant_person_id = participant.person_id AND participant.person_username = 'username' AND auction.id = 1;
 
 INSERT INTO textual_description(version, title, description, alteration_date, auction_id) VALUES(2, 'ola', 'olaaa', now(), 1);
-
+SELECT id, code, min_price, begin_date, end_date, person_username, title, description FROM auction, participant, textual_description WHERE auction.participant_person_id = participant.person_id AND auction.id = textual_description.auction_id AND auction.id = 1;

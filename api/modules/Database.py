@@ -290,16 +290,13 @@ class Database(object):
         if cursor.rowcount < 1:
             cursor.close()
             return False
-        cursor.close()
         self.connection.commit()
 
         # Get complete information about auction
-        auctionInfo = """SELECT id, code, min_price, begin_date, end_date, person_username, title, description 
-        FROM auction, participant, textual_description 
-        WHERE auction.participant_person_id = participant.person_id 
-        AND auction.id = textual_description.auction_id AND auction.id = %s"""
-        cursor.execute(auctionInfo, (auction_id,))
+        auctionInfo = 'SELECT id, code, min_price, begin_date, end_date, person_username, title, description FROM auction, participant, textual_description WHERE auction.participant_person_id = participant.person_id AND auction.id = textual_description.auction_id AND auction.id = %s AND textual_description.version = %s'
+        cursor.execute(auctionInfo, (auction_id, lastVersion))
         row = cursor.fetchone()
+        cursor.close()
         res = {"leilãoId": row[0], "codigo": row[1], "precoMin": row[2], "DataIni": row[3], "DataFim": row[4], "Criador": row[5], "Titulo": row[6], "Descricao": row[7]}
         return res
 

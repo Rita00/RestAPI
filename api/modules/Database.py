@@ -170,6 +170,45 @@ class Database(object):
         self.connection.commit()
         return bid_id
 
+    def writeFeedMessage(self, username, auction_id, message, message_type):
+        """
+        Escrever uma mensagem no mural de um leilão
+
+        :param username: nome de utilizador
+        :param auction_id: id do leilão
+        :param message: mensagem
+        :param message_type: tipo da mensagem
+
+        :return: id da mensagem
+        """
+        
+        cursor = self.connection.cursor()
+        # buscar id do participante
+        cursor.execute("""
+                        SELECT person_id
+                        FROM participant
+                        WHERE person_username=%s;
+                        """, (username,))
+        person_id = cursor.fetchone()[0]
+        
+        # registar a mensagem
+        cursor.execute("""
+                        INSERT INTO feed_message(type, participant_person_id, auction_id, message_message, message_message_date)
+                        VALUES(%s,%s,%s,%s,NOW());
+                        """, (message_type, person_id, auction_id, message))
+
+        # devolver id da mensagem
+        cursor.execute("""
+                        SELECT m.message_id
+                        FROM feed_message m, participant p
+                        WHERE m.participant_person_id=%s
+                        ORDER BY m.message_message_date DESC;
+                        """, (person_id,))
+        message_id = cursor.fetchone()[0]
+        cursor.close()
+        self.connection.commit()
+        return message_id
+
     def signIn(self, username, password):
         cursor = self.connection.cursor()
         # Exemplo de sql injection

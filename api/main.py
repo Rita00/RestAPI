@@ -45,10 +45,12 @@ def decode_auth_token(f):
     @wraps(f)  # why? -> https://www.geeksforgeeks.org/python-functools-wraps-function/
     def inner(*args, **kwargs):
 
-        if 'authToken' not in request.headers or not request.headers['authToken']:
+        content = request.json
+
+        if 'authToken' not in content.keys() or not content['authToken']:
             return jsonify({'erro': 401, 'message': 'Token is missing!!!'})
 
-        authToken = request.headers['authToken']
+        authToken = content['authToken']
 
         try:
             payload = jwt.decode(
@@ -170,6 +172,20 @@ def detailsAuction(leilaoId):
         print(e)
         return jsonify({'erro': 401})
     return jsonify(details)
+
+
+@app.route('/dbproj/feed/<leilaoId>', methods=['POST'])
+@decode_auth_token
+def writeFeedMessage(username, leilaoId):
+    """Escrever mensagem no mural de um leilão"""
+    try:
+        content = request.json
+        print(content)
+        message_id = db.writeFeedMessage(username, leilaoId, content["message"], content["type"])
+    except Exception as e:
+        print(e)
+        return jsonify({'erro': 401})
+    return jsonify({'messageId': message_id})
 
 
 @app.route('/')

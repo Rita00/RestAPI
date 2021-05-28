@@ -73,25 +73,25 @@ class Database(object):
                         SELECT person_id
                         FROM participant
                         WHERE person_username=%s;
-                        """, tuple(username))
+                        """, (username,))
         person_id = cursor.fetchone()[0]
         # insere o leilão
         cursor.execute("""
                         INSERT INTO auction(code, min_price, begin_date, end_date, participant_person_id)
-                        VALUES (%s,%s,%s,%s,%s);
-                        """, (article_id, min_price, begin_date, end_date, person_id))
+                        VALUES (%s,%s,NOW(),%s,%s);
+                        """, (article_id, min_price, end_date, person_id))
         cursor.execute("""
                         SELECT id
                         FROM auction
                         WHERE code= %s;
-                        """, tuple(article_id))
+                        """, (article_id,))
         id = cursor.fetchone()[0]
         # conta as versoes existentes
         cursor.execute("""
                         SELECT count(*)
                         FROM textual_description
                         WHERE auction_id=%s;
-                        """, tuple(id))
+                        """, (id,))
         version = 1 + cursor.fetchone()[0]
         # insere os dados textuais do leilão
         cursor.execute("""
@@ -130,12 +130,15 @@ class Database(object):
                                 )
                             )
                         );
-                        """, tuple(username))
-        res = cursor.fetchall()
+                        """, (username,))
+        if cursor.rowcount < 1:
+            res = []
+        else:
+            res = [{"leilaoId": row[0], "descricao": row[1]} for row in cursor.fetchall()]
         cursor.close()
         return res
 
-    def bid(self, username, price, auction_id):
+    def bid(self, username, auction_id, price):
         """
         Efetua uma licitação
 
@@ -151,7 +154,7 @@ class Database(object):
                         SELECT person_id
                         FROM participant
                         WHERE person_username=%s;
-                        """, tuple(username))
+                        """, (username,))
         person_id = cursor.fetchone()[0]
         # registar a licitacao
         cursor.execute("""
@@ -164,7 +167,7 @@ class Database(object):
                         FROM bid b, participant p
                         WHERE b.participant_person_id=%s
                         ORDER BY b.bid_date DESC;
-                        """, tuple(person_id))
+                        """, (person_id,))
         bid_id = cursor.fetchone()[0]
         cursor.close()
         self.connection.commit()
@@ -194,8 +197,8 @@ class Database(object):
         # registar a mensagem
         cursor.execute("""
                         INSERT INTO feed_message(type, participant_person_id, auction_id, message_message, message_message_date)
-                        VALUES(%s,%s,%s,%s,NOW());
-                        """, (message_type, person_id, auction_id, message))
+                        VALUES(%s,%s,%s,%s,%s);
+                        """, (message_type, person_id, auction_id, message, 'NOW()'))
 
         # devolver id da mensagem
         cursor.execute("""

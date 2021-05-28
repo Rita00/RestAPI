@@ -18,6 +18,7 @@ app = Flask(__name__)
 def encode_auth_token(user_id):
     """
     Generates the Auth Token
+
     :return: string
     """
     try:
@@ -38,7 +39,9 @@ def encode_auth_token(user_id):
 def decode_auth_token(f):
     """
     Decodes the auth token
-    :param auth_token:
+
+    :param f:
+
     :return: integer|string
     """
 
@@ -70,7 +73,11 @@ def decode_auth_token(f):
 
 @app.route('/dbproj/user', methods=['POST'])
 def signUp():
-    """Registar um utilizador"""
+    """
+    Registar um utilizador
+
+    :return: resposta da request
+    """
     id = None
     try:
         content = request.json
@@ -106,6 +113,7 @@ def signIn():
 
 
 @app.route('/dbproj/leilao', methods=['POST'])
+@decode_auth_token
 def createAuction(username):
     """Criar Leilão"""
     id = None
@@ -114,7 +122,7 @@ def createAuction(username):
         id = db.createAuction(username, content['artigoId'], content['precoMinimo'], content['dataInicio'],
                               content['dataFim'], content['titulo'], content['descricao'])
     except Exception as e:
-        db.connection.commit()
+        db.connection.rollback()
         print(e)
         return jsonify({'erro': 401})
     print(f"Added auction #{id}")
@@ -143,7 +151,8 @@ def listCurrentAuctions(keyword):
     return jsonify(auctions)
 
 
-@app.route(f'/dbproj/user/<userId>/leiloes', methods=['GET'])  # TODO username
+@app.route(f'/dbproj/user/leiloes', methods=['GET'])
+@decode_auth_token
 def listUserAuctions(username):
     """Listar os leilões em que o utilizador tenha uma atividade"""
     try:
@@ -156,10 +165,11 @@ def listUserAuctions(username):
 
 
 @app.route(f'/dbproj/licitar/<leilaoId>/<licictacao>', methods=['POST'])  # TODO leilaoId
-def bid(username, auction_id, price):
+@decode_auth_token
+def bid(username, leilaoId, licictacao):
     """Listar os leilões em que o utilizador tenha uma atividade"""
     try:
-        bid_id = db.bid(username, auction_id, price)
+        bid_id = db.bid(username, leilaoId, licictacao)
     except Exception as e:
         print(e)
         return jsonify({'erro': 401})

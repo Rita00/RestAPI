@@ -42,7 +42,7 @@ CREATE TABLE feed_message (
 	type			 VARCHAR(512) NOT NULL,
 	participant_person_id INTEGER NOT NULL,
 	auction_id		 INTEGER NOT NULL,
-	message_id		 INTEGER,
+	message_id		 SERIAL,
 	message_message	 VARCHAR(512) NOT NULL,
 	message_message_date	 TIMESTAMP NOT NULL,
 	PRIMARY KEY(message_id)

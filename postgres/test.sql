@@ -21,16 +21,17 @@ SELECT id, description FROM auction, textual_description
 
 --- Criar mensagens
 SELECT * from feed_message;
-INSERT INTO feed_message (message_id, type, participant_person_id, auction_id, message_message, message_message_date)
-VALUES (1, 'question', 14, 3, 'Teste detalhes leilão e mensagens', date('now'));
-INSERT INTO feed_message (message_id, type, participant_person_id, auction_id, message_message, message_message_date)
-VALUES (2, 'comment', 14, 3, 'Teste detalhes leilão e várias mensagens', date('now'));
-INSERT INTO feed_message (message_id, type, participant_person_id, auction_id, message_message, message_message_date)
-VALUES (3, 'clarification', 14, 3, 'Teste detalhes leilão e várias mensagens2', date('now'));
-INSERT INTO feed_message (message_id, type, participant_person_id, auction_id, message_message, message_message_date)
-VALUES (4, 'question', 14, 1, 'Teste detalhes leilão e várias mensagens3', date('now'));
-INSERT INTO feed_message (message_id, type, participant_person_id, auction_id, message_message, message_message_date)
-VALUES (5, 'question', 14, 1, 'Teste detalhes leilão e mensagens', date('now'));
+INSERT INTO feed_message (type, participant_person_id, auction_id, message_message, message_message_date)
+VALUES ('question', 14, 3, 'Teste detalhes leilão e mensagens', date('now'));
+INSERT INTO feed_message (type, participant_person_id, auction_id, message_message, message_message_date)
+VALUES ('comment', 14, 3, 'Teste detalhes leilão e várias mensagens', date('now'));
+INSERT INTO feed_message (type, participant_person_id, auction_id, message_message, message_message_date)
+VALUES ('clarification', 14, 3, 'Teste detalhes leilão e várias mensagens2', date('now'));
+INSERT INTO feed_message (type, participant_person_id, auction_id, message_message, message_message_date)
+VALUES ('question', 14, 1, 'Teste detalhes leilão e várias mensagens3', date('now'));
+INSERT INTO feed_message (type, participant_person_id, auction_id, message_message, message_message_date)
+VALUES ('question', 14, 1, 'Teste detalhes leilão e mensagens', date('now'));
+
 INSERT INTO bid(bid_date, price, participant_person_id, auction_id)
 VALUES(now(),30.00,17,1);
 INSERT INTO bid(bid_date, price, participant_person_id, auction_id)

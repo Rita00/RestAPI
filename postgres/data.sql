@@ -128,7 +128,12 @@ ALTER TABLE admin_participant
 ALTER TABLE admin_participant
     ADD CONSTRAINT admin_participant_fk2 FOREIGN KEY (participant_person_id) REFERENCES participant (person_id);
 
---PROCEDURES=========================================
+--TRIGGERS=========================================
+--drop
+DROP TRIGGER IF EXISTS t_ban ON admin_participant;
+DROP FUNCTION IF EXISTS  participant_banned() CASCADE;
+
+--participant banned
 CREATE OR REPLACE FUNCTION participant_banned()
 RETURNS TRIGGER
 LANGUAGE plpgsql
@@ -171,7 +176,14 @@ BEGIN
     RETURN new;
 END;
 $$;
+CREATE TRIGGER tai_ban
+    AFTER INSERT
+    ON admin_participant
+    FOR EACH ROW
+    EXECUTE PROCEDURE participant_banned();
 
+
+--finished auctions
 CREATE OR REPLACE PROCEDURE public.finish_auctions()
     LANGUAGE plpgsql as
 $$
@@ -194,12 +206,6 @@ BEGIN
         end loop;
 END;
 $$;
-
-CREATE TRIGGER tai_ban
-    AFTER INSERT
-    ON admin_participant
-    FOR EACH ROW
-    EXECUTE PROCEDURE participant_banned();
 --DADOS TESTE===========================================
 --Pessoas teste
 INSERT INTO participant (person_id, person_username, person_email, person_password)

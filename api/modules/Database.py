@@ -224,12 +224,26 @@ class Database(object):
         cursor = self.connection.cursor()
         # Exemplo de sql injection
         # password1 = '\' union select * from participant WHERE \'1\'= \'1'
-        sql = 'SELECT * FROM participant WHERE person_username = %s AND person_password = %s'
+
+        sql = """   
+                SELECT * 
+                FROM participant
+                WHERE (person_username = %s AND person_password = %s) 
+            """
         cursor.execute(sql, (username, password))
         if cursor.rowcount < 1:
+            sql = """   
+                    SELECT * 
+                    FROM admin
+                    WHERE (person_username = %s AND person_password = %s) 
+                """
+            cursor.execute(sql, (username, password))
+            if cursor.rowcount < 1:
+                cursor.close()
+                return False
+                # return 'AuthError'
             cursor.close()
-            return False
-            # return 'AuthError'
+            return True
 
         isBanned = 'SELECT isbanned FROM participant WHERE person_username = %s'
         cursor.execute(isBanned, (username,))
@@ -237,7 +251,6 @@ class Database(object):
         if isBanned:
             cursor.close()
             return 'banned'
-
         cursor.close()
         return True
 
@@ -319,6 +332,42 @@ class Database(object):
         cursor.close()
         return True
 
+    def ban(self, admin, user):
+        """
+        Banir utilizador definitivamente por um admin.\n
+        A adição de dados na tabela admin_participant vai ativar um trigger
+        que encarrega-se de atualizar os dados todas das restantes tabelas devidas ao
+        baniamento do utilizador.
+
+        :param admin: administrador
+        :param user: utilizador banido
+
+        :return: id do administrador e do utilizador que foi banido por ele
+        """
+        cursor = self.connection.cursor()
+        # buscar id do admin
+        cursor.execute("""
+                        SELECT person_id
+                        FROM admin
+                        WHERE person_username=%s;
+                        """, (admin,))
+        admin_id = cursor.fetchone()[0]
+        # buscar id do participante
+        cursor.execute("""
+                        SELECT person_id
+                        FROM participant
+                        WHERE person_username=%s;
+                        """, (user,))
+        user_id = cursor.fetchone()[0]
+        # registar a mensagem
+        cursor.execute("""
+                        INSERT INTO admin_participant
+                        VALUES(%s,%s);
+                        """, (admin_id, user_id))
+        cursor.close()
+        self.connection.commit()
+        return admin_id, user_id
+
     def cancelAuction(self, leilaoId, username):
         cursor = self.connection.cursor()
         sqlAdmin = 'SELECT * FROM admin WHERE person_id = %s'
@@ -334,10 +383,6 @@ class Database(object):
         if cursor.rowcount < 1:
             cursor.close()
             return "noAuction"
-
-
-
-
 
 if __name__ == '__main__':
     # testar codigo desta classe aqui

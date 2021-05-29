@@ -127,18 +127,63 @@ ALTER TABLE admin_participant
     ADD CONSTRAINT admin_participant_fk1 FOREIGN KEY (admin_person_id) REFERENCES admin (person_id);
 ALTER TABLE admin_participant
     ADD CONSTRAINT admin_participant_fk2 FOREIGN KEY (participant_person_id) REFERENCES participant (person_id);
---PROCEDURES=========================================
+
+--TRIGGERS=========================================
+--drop
+DROP TRIGGER IF EXISTS t_ban ON admin_participant;
+DROP FUNCTION IF EXISTS  participant_banned() CASCADE;
+
+--participant banned
 CREATE OR REPLACE FUNCTION participant_banned()
-    RETURNS TRIGGER
-    LANGUAGE plpgsql
-AS
-$$
+RETURNS TRIGGER
+LANGUAGE plpgsql
+AS $$
 BEGIN
-    --balbla TODO
+    -- ban participant
+    UPDATE participant SET isbanned=True WHERE new.participant_person_id=person_id;
+    -- cancel participant auctions
+    UPDATE auction SET iscancelled=True WHERE new.participant_person_id=participant_person_id;
+    -- invalids participant bids
+    UPDATE bid SET isinvalided=True WHERE new.participant_person_id=participant_person_id;
+    -- invalids greaters bids
+    UPDATE bid
+    SET isinvalided=True
+    FROM (
+        SELECT MAX(price) maxprice_invalidated, auction_id aid
+        FROM bid
+        WHERE new.participant_person_id=participant_person_id
+        GROUP BY auction_id
+    ) AS subquery
+    WHERE price > subquery.maxprice_invalidated AND auction_id=subquery.aid;
+    -- sets the greater bid to the max price of banned user bid
+    UPDATE bid
+    SET price = subquery.maxprice,
+        auction_id = subquery.aid
+    FROM (
+        SELECT MAX(price) maxprice,auction_id aid
+        FROM bid
+        WHERE new.participant_person_id=participant_person_id
+        GROUP BY aid
+    ) AS subquery
+    WHERE (price,auction_id) IN (
+        SELECT MAX(price), auction_id aid
+        FROM bid
+        WHERE new.participant_person_id!=participant_person_id
+        GROUP BY aid
+    );
+    -- laments the incomodo
+    -- TODO
     RETURN new;
 END;
 $$;
+CREATE TRIGGER tai_ban
+    AFTER INSERT
+    ON admin_participant
+    FOR EACH ROW
+    EXECUTE PROCEDURE participant_banned();
 
+
+--finished auctions
 CREATE OR REPLACE PROCEDURE public.finish_auctions()
     LANGUAGE plpgsql as
 $$
@@ -161,18 +206,6 @@ BEGIN
         end loop;
 END;
 $$;
-
---TRIGGERS===========================================
-
-
-DROP TRIGGER IF EXISTS t_ban;
-CREATE TRIGGER tai_ban
-    AFTER INSERT
-    ON admin_participant
-    FOR EACH ROW
-    WHEN (OLD.* IS DISTINCT FROM NEW.*)
-EXECUTE PROCEDURE participant_banned();
-
 --DADOS TESTE===========================================
 --Pessoas teste
 INSERT INTO participant (person_id, person_username, person_email, person_password)

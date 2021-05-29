@@ -316,12 +316,7 @@ class Database(object):
         # calls a procedure for efficiency
         cursor = self.connection.cursor()
         cursor.execute("CALL finish_auctions();")
-        # updateEndedAuctions = 'UPDATE auction SET isactive = false WHERE end_date < %s'
-        # cursor.execute(updateEndedAuctions, ('now()',))
-        # updateWinner = 'UPDATE auction SET winner = (SELECT participant_person_id, MAX(price) FROM bid WHERE is)'
-        # Update failed
-        if cursor.rowcount < 1:
-            return False
+        cursor.close()
         return True
 
 

@@ -223,9 +223,7 @@ def editAuction(username, leilaoId):
 def finishAuction():
     """Terminar leilão na data, hora e minuto marcados"""
     try:
-        # Error on update
-        if not db.finishAuctions():
-            return jsonify({'erro': 401})
+        db.finishAuctions()
     except Exception as e:
         print(e)
         return jsonify({'erro': 401})

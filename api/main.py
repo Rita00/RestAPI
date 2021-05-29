@@ -130,6 +130,7 @@ def createAuction(username):
 
 
 @app.route('/dbproj/leiloes', methods=['GET'])
+@decode_auth_token
 def listAllAuctions():
     """Listar Todos os leilões existentes"""
     try:
@@ -141,6 +142,7 @@ def listAllAuctions():
 
 
 @app.route('/dbproj/leiloes/<keyword>', methods=['GET'])
+@decode_auth_token
 def listCurrentAuctions(keyword):
     """Listar os leilões que estão a decorrer"""
     try:
@@ -177,6 +179,7 @@ def bid(username, leilaoId, licictacao):
 
 
 @app.route('/dbproj/leilao/<leilaoId>', methods=['GET'])
+@decode_auth_token
 def detailsAuction(leilaoId):
     """Consultar os detalhes de um determinado leilão"""
     try:
@@ -214,6 +217,17 @@ def editAuction(username, leilaoId):
         elif res == False:
             return jsonify({'erro': 401})
         return jsonify(res)
+    except Exception as e:
+        print(e)
+        return jsonify({'erro': 401})
+
+
+@app.route('/dbproj/leilao/checkFinish', methods=['PUT'])
+@decode_auth_token
+def finishAuction():
+    """Terminar leilão na data, hora e minuto marcados"""
+    try:
+        db.finishAuctions()
     except Exception as e:
         print(e)
         return jsonify({'erro': 401})

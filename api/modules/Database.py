@@ -213,6 +213,14 @@ class Database(object):
         return message_id
 
     def signIn(self, username, password):
+        """
+                Efetuar login na aplicação
+
+                :param username: nome de utilizador
+                :param password: password do utilizador
+
+                :return: true caso o user exista na base de dados, false caso contrário e banned caso o utilizador esteja banido
+                """
         cursor = self.connection.cursor()
         # Exemplo de sql injection
         # password1 = '\' union select * from participant WHERE \'1\'= \'1'
@@ -246,8 +254,8 @@ class Database(object):
 
     def listAuctions(self, param):
         cursor = self.connection.cursor()
-        sql = 'SELECT id, description FROM auction, textual_description WHERE auction.id = textual_description.auction_id AND (auction.code::text = %s OR textual_description.description like %s)'
-        cursor.execute(sql, (param, '%' + param + '%'))
+        sql = 'SELECT id, description FROM auction, textual_description WHERE auction.id = textual_description.auction_id AND (auction.code::text = %s OR textual_description.description like %s) AND end_date > %s'
+        cursor.execute(sql, (param, '%' + param + '%', 'now()'))
         if cursor.rowcount < 1:
             res = []
         else:
@@ -296,12 +304,20 @@ class Database(object):
         self.connection.commit()
 
         # Get complete information about auction
-        auctionInfo = 'SELECT id, code, min_price, begin_date, end_date, person_username, title, description FROM auction, participant, textual_description WHERE auction.participant_person_id = participant.person_id AND auction.id = textual_description.auction_id AND auction.id = %s AND textual_description.version = %s'
+        auctionInfo = 'SELECT id, code, min_price, begin_date, end_date, isactive, person_username, title, description FROM auction, participant, textual_description WHERE auction.participant_person_id = participant.person_id AND auction.id = textual_description.auction_id AND auction.id = %s AND textual_description.version = %s'
         cursor.execute(auctionInfo, (auction_id, lastVersion))
         row = cursor.fetchone()
         cursor.close()
-        res = {"leilãoId": row[0], "codigo": row[1], "precoMin": row[2], "DataIni": row[3], "DataFim": row[4], "Criador": row[5], "Titulo": row[6], "Descricao": row[7]}
+        res = {"leilãoId": row[0], "codigo": row[1], "precoMin": row[2], "DataIni": row[3], "DataFim": row[4],
+               "Ativo": row[5], "Criador": row[6], "Titulo": row[7], "Descricao": row[8]}
         return res
+
+    def finishAuctions(self):
+        # calls a procedure for efficiency
+        cursor = self.connection.cursor()
+        cursor.execute("CALL finish_auctions();")
+        cursor.close()
+        return True
 
 
 if __name__ == '__main__':

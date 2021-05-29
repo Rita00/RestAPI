@@ -232,6 +232,16 @@ def finishAuction():
         print(e)
         return jsonify({'erro': 401})
 
+@app.route('/dbproj/ban/<user>', methods=['PUT'])
+@decode_auth_token
+def ban(username,user):
+    """Banir um utilizador definitivamente"""
+    try:
+        admin_id, user_id = db.ban(username, user)
+    except Exception as e:
+        print(e)
+        return jsonify({'erro': 401})
+    return jsonify({'adminId': admin_id, 'userId': user_id})
 
 @app.route('/')
 @app.route('/home')

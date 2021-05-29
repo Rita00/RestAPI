@@ -1,6 +1,6 @@
 -- SignUp
-INSERT INTO participant (person_username,person_email,person_password,person_token)
-VALUES ('dylan','dylan@email.com','12345','qwertzuiopasdfghjklyxcvbnm');
+INSERT INTO participant (person_id, person_username,person_email,person_password)
+VALUES (17, 'teste','teste@email.com','12345');
 
 --- Simular Leilões
 SELECT * FROM auction;
@@ -98,4 +98,25 @@ SELECT * FROM auction JOIN participant on auction.participant_person_id = partic
 INSERT INTO textual_description(version, title, description, alteration_date, auction_id) VALUES(2, 'ola', 'olaaa', now(), 1);
 SELECT id, code, min_price, begin_date, end_date, person_username, title, description FROM auction, participant, textual_description WHERE auction.participant_person_id = participant.person_id AND auction.id = textual_description.auction_id AND auction.id = 1;
 
-UPDATE auction SET isactive = false WHERE end_date < now()
+UPDATE auction SET isactive = false WHERE end_date < now();
+
+SELECT person_username FROM bid, participant WHERE bid.participant_person_id = participant.person_id AND auction_id = 1 ORDER BY price desc limit 1;
+
+SELECT 'now()';
+
+call finish_auctions();
+SELECT *
+        FROM auction
+        WHERE isactive = True AND end_date < now();
+
+UPDATE auction SET isactive = false WHERE id = 3;
+
+rollback;
+
+select * from auction;
+select relation::regclass, * from pg_locks where not granted;
+vacuum analyse;
+SELECT person_username FROM bid, participant
+                          WHERE bid.participant_person_id = participant.person_id and auction_id = 1
+                          ORDER BY price desc
+                          limit 1;

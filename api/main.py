@@ -233,6 +233,12 @@ def finishAuction():
         return jsonify({'erro': 401})
 
 
+@app.route('/dbproj/leilao/cancel/<leilaoId>', methods=['PUT'])
+@decode_auth_token
+def cancelAuction(username, leilaoId):
+    """Um administrador pode cancelar um leilão"""
+
+
 @app.route('/')
 @app.route('/home')
 def home():

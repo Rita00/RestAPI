@@ -131,7 +131,7 @@ def createAuction(username):
 
 @app.route('/dbproj/leiloes', methods=['GET'])
 @decode_auth_token
-def listAllAuctions():
+def listAllAuctions(username):
     """Listar Todos os leilões existentes"""
     try:
         auctions = db.listAllAuctions()
@@ -226,7 +226,7 @@ def editAuction(username, leilaoId):
 
 @app.route('/dbproj/leilao/checkFinish', methods=['PUT'])
 @decode_auth_token
-def finishAuction():
+def finishAuction(username):
     """Terminar leilão na data, hora e minuto marcados"""
     try:
         db.finishAuctions()
@@ -234,9 +234,10 @@ def finishAuction():
         print(e)
         return jsonify({'erro': 401})
 
+
 @app.route('/dbproj/ban/<user>', methods=['PUT'])
 @decode_auth_token
-def ban(username,user):
+def ban(username, user):
     """Banir um utilizador definitivamente"""
     try:
         admin_id, user_id = db.ban(username, user)
@@ -244,6 +245,7 @@ def ban(username,user):
         print(e)
         return jsonify({'erro': 401})
     return jsonify({'adminId': admin_id, 'userId': user_id})
+
 
 @app.route('/dbproj/leilao/cancel/<leilaoId>', methods=['PUT'])
 @decode_auth_token

@@ -308,10 +308,40 @@ def cancelAuction(username, leilaoId):
         return jsonify({'erro': 401})
 
 
-@app.route('/')
-@app.route('/home')
+@app.route('/dbproj/stats', methods=['GET'])
+@decode_auth_token
+def stats(username):
+    """
+    Consultar estatisticas da applicação: \n
+    - TOP10 utilizadores com mais leilões criados \n
+    - TOP10 utilizadores que mais leilões venceram |n
+    - número total de leilões nos últimos 10 dias
+
+    :param username: username do administrador
+
+    :return: resposta
+    """
+    try:
+        valid = utils.validateTypes([username], [str])
+        if not valid:
+            return jsonify({'erro': 404})
+        res = db.stats(username)
+        db.connection.commit()
+        return jsonify({'topCriadores': res[0], 'topVencedores': res[1], 'numeroDeLeiloesNosUltimosDezDias': res[2]})
+    except Exception as e:
+        db.connection.rollback()
+        print(e)
+        return jsonify({'erro': 401})
+
+
+@app.route('/*')
 def home():
-    return "<h1><center>BidYourAuction<center></h1>"
+    """
+    Devolve page not found error
+
+    :return: codigo de erro
+    """
+    return jsonify({'erro': 404})
 
 
 if __name__ == '__main__':

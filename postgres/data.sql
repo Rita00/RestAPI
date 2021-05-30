@@ -61,7 +61,6 @@ CREATE TABLE admin
     person_username VARCHAR(512) UNIQUE NOT NULL,
     person_email    VARCHAR(512) UNIQUE NOT NULL,
     person_password VARCHAR(512)        NOT NULL,
-    person_token    VARCHAR(512) UNIQUE,
     PRIMARY KEY (person_id)
 );
 
@@ -72,7 +71,6 @@ CREATE TABLE participant
     person_username VARCHAR(512) UNIQUE NOT NULL,
     person_email    VARCHAR(512) UNIQUE NOT NULL,
     person_password VARCHAR(512)        NOT NULL,
-    person_token    VARCHAR(512) UNIQUE,
     PRIMARY KEY (person_id)
 );
 

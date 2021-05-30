@@ -6527,14 +6527,14 @@ true posixrules
     <database id="1281" parent="1" name="das7ket3c5aarn">
       <ObjectId>12185636</ObjectId>
       <Owner>vtxuzrplfviiht</Owner>
-      <IntrospectionStateNumber>54655165</IntrospectionStateNumber>
+      <IntrospectionStateNumber>54655780</IntrospectionStateNumber>
       <Current>1</Current>
-      <Relations>sequence|table|13753239|13753241|1
-sequence|table|13753256|13753258|2
-sequence|table|13753195|13753197|1
+      <Relations>sequence|table|13753195|13753197|1
 sequence|table|13753208|13753210|1
 sequence|table|13753217|13753219|2
 sequence|table|13753228|13753230|4
+sequence|table|13753712|13753714|1
+sequence|table|13753727|13753729|2
 </Relations>
     </database>
     <database id="1282" parent="1" name="dashrdupvsgj4s">
@@ -19237,7 +19237,7 @@ UC/12185635
 </Acl>
       <StateNumber>51439847</StateNumber>
       <Owner>vtxuzrplfviiht</Owner>
-      <IntrospectionStateNumber>54655179</IntrospectionStateNumber>
+      <IntrospectionStateNumber>54655788</IntrospectionStateNumber>
       <Current>1</Current>
     </schema>
     <extension id="4009" parent="1281" name="plpgsql">
@@ -19342,9 +19342,9 @@ UC/12185635
       <Type>index</Type>
     </access-method>
     <sequence id="4021" parent="4008" name="admin_person_id_seq">
-      <ObjectId>13753239</ObjectId>
+      <ObjectId>13753712</ObjectId>
       <Owner>vtxuzrplfviiht</Owner>
-      <StateNumber>54651298</StateNumber>
+      <StateNumber>54655774</StateNumber>
       <DataType>integer|0s</DataType>
     </sequence>
     <sequence id="4022" parent="4008" name="auction_id_seq">
@@ -19372,15 +19372,15 @@ UC/12185635
       <DataType>integer|0s</DataType>
     </sequence>
     <sequence id="4026" parent="4008" name="participant_person_id_seq">
-      <ObjectId>13753256</ObjectId>
+      <ObjectId>13753727</ObjectId>
       <Owner>vtxuzrplfviiht</Owner>
-      <StateNumber>54651300</StateNumber>
+      <StateNumber>54655775</StateNumber>
       <DataType>integer|0s</DataType>
     </sequence>
     <table id="4027" parent="4008" name="admin">
-      <ObjectId>13753241</ObjectId>
+      <ObjectId>13753714</ObjectId>
       <Owner>vtxuzrplfviiht</Owner>
-      <StateNumber>54651322</StateNumber>
+      <StateNumber>54655774</StateNumber>
     </table>
     <table id="4028" parent="4008" name="admin_auction">
       <ObjectId>13753282</ObjectId>
@@ -19413,9 +19413,9 @@ UC/12185635
       <StateNumber>54651314</StateNumber>
     </table>
     <table id="4034" parent="4008" name="participant">
-      <ObjectId>13753258</ObjectId>
+      <ObjectId>13753729</ObjectId>
       <Owner>vtxuzrplfviiht</Owner>
-      <StateNumber>54651306</StateNumber>
+      <StateNumber>54655775</StateNumber>
     </table>
     <table id="4035" parent="4008" name="textual_description">
       <ObjectId>13753274</ObjectId>
@@ -19475,7 +19475,7 @@ UC/12185635
       <Position>1</Position>
       <DataType>integer|0s</DataType>
       <NotNull>1</NotNull>
-      <StateNumber>54651298</StateNumber>
+      <StateNumber>54655774</StateNumber>
       <DefaultExpression>nextval(&apos;admin_person_id_seq&apos;::regclass)</DefaultExpression>
       <TypeId>23</TypeId>
     </column>
@@ -19483,32 +19483,26 @@ UC/12185635
       <Position>2</Position>
       <DataType>varchar(512)|0s</DataType>
       <NotNull>1</NotNull>
-      <StateNumber>54651298</StateNumber>
+      <StateNumber>54655774</StateNumber>
       <TypeId>1043</TypeId>
     </column>
     <column id="4043" parent="4027" name="person_email">
       <Position>3</Position>
       <DataType>varchar(512)|0s</DataType>
       <NotNull>1</NotNull>
-      <StateNumber>54651298</StateNumber>
+      <StateNumber>54655774</StateNumber>
       <TypeId>1043</TypeId>
     </column>
     <column id="4044" parent="4027" name="person_password">
       <Position>4</Position>
       <DataType>varchar(512)|0s</DataType>
       <NotNull>1</NotNull>
-      <StateNumber>54651298</StateNumber>
+      <StateNumber>54655774</StateNumber>
       <TypeId>1043</TypeId>
     </column>
-    <column id="4045" parent="4027" name="person_token">
-      <Position>5</Position>
-      <DataType>varchar(512)|0s</DataType>
-      <StateNumber>54651298</StateNumber>
-      <TypeId>1043</TypeId>
-    </column>
-    <index id="4046" parent="4027" name="admin_pkey">
-      <ObjectId>13753248</ObjectId>
-      <StateNumber>54651298</StateNumber>
+    <index id="4045" parent="4027" name="admin_pkey">
+      <ObjectId>13753721</ObjectId>
+      <StateNumber>54655774</StateNumber>
       <ColNames>person_id</ColNames>
       <Unique>1</Unique>
       <Primary>1</Primary>
@@ -19516,9 +19510,9 @@ UC/12185635
       <CollationIds>0</CollationIds>
       <ClassIds>1978</ClassIds>
     </index>
-    <index id="4047" parent="4027" name="admin_person_username_key">
-      <ObjectId>13753250</ObjectId>
-      <StateNumber>54651298</StateNumber>
+    <index id="4046" parent="4027" name="admin_person_username_key">
+      <ObjectId>13753723</ObjectId>
+      <StateNumber>54655774</StateNumber>
       <ColNames>person_username</ColNames>
       <Unique>1</Unique>
       <AccessMethodId>403</AccessMethodId>
@@ -19526,9 +19520,9 @@ UC/12185635
       <CollationNames>default</CollationNames>
       <ClassIds>3126</ClassIds>
     </index>
-    <index id="4048" parent="4027" name="admin_person_email_key">
-      <ObjectId>13753252</ObjectId>
-      <StateNumber>54651298</StateNumber>
+    <index id="4047" parent="4027" name="admin_person_email_key">
+      <ObjectId>13753725</ObjectId>
+      <StateNumber>54655774</StateNumber>
       <ColNames>person_email</ColNames>
       <Unique>1</Unique>
       <AccessMethodId>403</AccessMethodId>
@@ -19536,56 +19530,40 @@ UC/12185635
       <CollationNames>default</CollationNames>
       <ClassIds>3126</ClassIds>
     </index>
-    <index id="4049" parent="4027" name="admin_person_token_key">
-      <ObjectId>13753254</ObjectId>
-      <StateNumber>54651298</StateNumber>
-      <ColNames>person_token</ColNames>
-      <Unique>1</Unique>
-      <AccessMethodId>403</AccessMethodId>
-      <CollationIds>100</CollationIds>
-      <CollationNames>default</CollationNames>
-      <ClassIds>3126</ClassIds>
-    </index>
-    <key id="4050" parent="4027" name="admin_pkey">
-      <ObjectId>13753249</ObjectId>
-      <StateNumber>54651298</StateNumber>
+    <key id="4048" parent="4027" name="admin_pkey">
+      <ObjectId>13753722</ObjectId>
+      <StateNumber>54655774</StateNumber>
       <ColNames>person_id</ColNames>
       <Primary>1</Primary>
       <UnderlyingIndexName>admin_pkey</UnderlyingIndexName>
     </key>
-    <key id="4051" parent="4027" name="admin_person_username_key">
-      <ObjectId>13753251</ObjectId>
-      <StateNumber>54651298</StateNumber>
+    <key id="4049" parent="4027" name="admin_person_username_key">
+      <ObjectId>13753724</ObjectId>
+      <StateNumber>54655774</StateNumber>
       <ColNames>person_username</ColNames>
       <UnderlyingIndexName>admin_person_username_key</UnderlyingIndexName>
     </key>
-    <key id="4052" parent="4027" name="admin_person_email_key">
-      <ObjectId>13753253</ObjectId>
-      <StateNumber>54651298</StateNumber>
+    <key id="4050" parent="4027" name="admin_person_email_key">
+      <ObjectId>13753726</ObjectId>
+      <StateNumber>54655774</StateNumber>
       <ColNames>person_email</ColNames>
       <UnderlyingIndexName>admin_person_email_key</UnderlyingIndexName>
     </key>
-    <key id="4053" parent="4027" name="admin_person_token_key">
-      <ObjectId>13753255</ObjectId>
-      <StateNumber>54651298</StateNumber>
-      <ColNames>person_token</ColNames>
-      <UnderlyingIndexName>admin_person_token_key</UnderlyingIndexName>
-    </key>
-    <column id="4054" parent="4028" name="admin_person_id">
+    <column id="4051" parent="4028" name="admin_person_id">
       <Position>1</Position>
       <DataType>integer|0s</DataType>
       <NotNull>1</NotNull>
       <StateNumber>54651302</StateNumber>
       <TypeId>23</TypeId>
     </column>
-    <column id="4055" parent="4028" name="auction_id">
+    <column id="4052" parent="4028" name="auction_id">
       <Position>2</Position>
       <DataType>integer|0s</DataType>
       <NotNull>1</NotNull>
       <StateNumber>54651302</StateNumber>
       <TypeId>23</TypeId>
     </column>
-    <index id="4056" parent="4028" name="admin_auction_pkey">
+    <index id="4053" parent="4028" name="admin_auction_pkey">
       <ObjectId>13753285</ObjectId>
       <StateNumber>54651302</StateNumber>
       <ColNames>auction_id</ColNames>
@@ -19595,24 +19573,14 @@ UC/12185635
       <CollationIds>0</CollationIds>
       <ClassIds>1978</ClassIds>
     </index>
-    <key id="4057" parent="4028" name="admin_auction_pkey">
+    <key id="4054" parent="4028" name="admin_auction_pkey">
       <ObjectId>13753286</ObjectId>
       <StateNumber>54651302</StateNumber>
       <ColNames>auction_id</ColNames>
       <Primary>1</Primary>
       <UnderlyingIndexName>admin_auction_pkey</UnderlyingIndexName>
     </key>
-    <foreign-key id="4058" parent="4028" name="admin_auction_fk1">
-      <ObjectId>13753329</ObjectId>
-      <StateNumber>54651322</StateNumber>
-      <ColNames>admin_person_id</ColNames>
-      <RefTableId>13753241</RefTableId>
-      <RefColPositions>1</RefColPositions>
-      <RefTableName>admin</RefTableName>
-      <RefKeyName>admin_pkey</RefKeyName>
-      <RefColNames>person_id</RefColNames>
-    </foreign-key>
-    <foreign-key id="4059" parent="4028" name="admin_auction_fk2">
+    <foreign-key id="4055" parent="4028" name="admin_auction_fk2">
       <ObjectId>13753334</ObjectId>
       <StateNumber>54651324</StateNumber>
       <ColNames>auction_id</ColNames>
@@ -19622,21 +19590,21 @@ UC/12185635
       <RefKeyName>auction_pkey</RefKeyName>
       <RefColNames>id</RefColNames>
     </foreign-key>
-    <column id="4060" parent="4029" name="admin_person_id">
+    <column id="4056" parent="4029" name="admin_person_id">
       <Position>1</Position>
       <DataType>integer|0s</DataType>
       <NotNull>1</NotNull>
       <StateNumber>54651303</StateNumber>
       <TypeId>23</TypeId>
     </column>
-    <column id="4061" parent="4029" name="participant_person_id">
+    <column id="4057" parent="4029" name="participant_person_id">
       <Position>2</Position>
       <DataType>integer|0s</DataType>
       <NotNull>1</NotNull>
       <StateNumber>54651303</StateNumber>
       <TypeId>23</TypeId>
     </column>
-    <index id="4062" parent="4029" name="admin_participant_pkey">
+    <index id="4058" parent="4029" name="admin_participant_pkey">
       <ObjectId>13753290</ObjectId>
       <StateNumber>54651303</StateNumber>
       <ColNames>participant_person_id</ColNames>
@@ -19646,41 +19614,21 @@ UC/12185635
       <CollationIds>0</CollationIds>
       <ClassIds>1978</ClassIds>
     </index>
-    <key id="4063" parent="4029" name="admin_participant_pkey">
+    <key id="4059" parent="4029" name="admin_participant_pkey">
       <ObjectId>13753291</ObjectId>
       <StateNumber>54651303</StateNumber>
       <ColNames>participant_person_id</ColNames>
       <Primary>1</Primary>
       <UnderlyingIndexName>admin_participant_pkey</UnderlyingIndexName>
     </key>
-    <foreign-key id="4064" parent="4029" name="admin_participant_fk1">
-      <ObjectId>13753339</ObjectId>
-      <StateNumber>54651326</StateNumber>
-      <ColNames>admin_person_id</ColNames>
-      <RefTableId>13753241</RefTableId>
-      <RefColPositions>1</RefColPositions>
-      <RefTableName>admin</RefTableName>
-      <RefKeyName>admin_pkey</RefKeyName>
-      <RefColNames>person_id</RefColNames>
-    </foreign-key>
-    <foreign-key id="4065" parent="4029" name="admin_participant_fk2">
-      <ObjectId>13753344</ObjectId>
-      <StateNumber>54651329</StateNumber>
-      <ColNames>participant_person_id</ColNames>
-      <RefTableId>13753258</RefTableId>
-      <RefColPositions>2</RefColPositions>
-      <RefTableName>participant</RefTableName>
-      <RefKeyName>participant_pkey</RefKeyName>
-      <RefColNames>person_id</RefColNames>
-    </foreign-key>
-    <trigger id="4066" parent="4029" name="tai_ban">
+    <trigger id="4060" parent="4029" name="tai_ban">
       <ObjectId>13753672</ObjectId>
       <StateNumber>54655159</StateNumber>
       <Turn>after-row</Turn>
       <Events>I</Events>
       <CallRoutineId>13753671</CallRoutineId>
     </trigger>
-    <column id="4067" parent="4030" name="id">
+    <column id="4061" parent="4030" name="id">
       <Position>1</Position>
       <DataType>integer|0s</DataType>
       <NotNull>1</NotNull>
@@ -19688,35 +19636,35 @@ UC/12185635
       <DefaultExpression>nextval(&apos;auction_id_seq&apos;::regclass)</DefaultExpression>
       <TypeId>23</TypeId>
     </column>
-    <column id="4068" parent="4030" name="code">
+    <column id="4062" parent="4030" name="code">
       <Position>2</Position>
       <DataType>bigint|0s</DataType>
       <NotNull>1</NotNull>
       <StateNumber>54651292</StateNumber>
       <TypeId>20</TypeId>
     </column>
-    <column id="4069" parent="4030" name="min_price">
+    <column id="4063" parent="4030" name="min_price">
       <Position>3</Position>
       <DataType>real|0s</DataType>
       <NotNull>1</NotNull>
       <StateNumber>54651292</StateNumber>
       <TypeId>700</TypeId>
     </column>
-    <column id="4070" parent="4030" name="begin_date">
+    <column id="4064" parent="4030" name="begin_date">
       <Position>4</Position>
       <DataType>timestamp|0s</DataType>
       <NotNull>1</NotNull>
       <StateNumber>54651292</StateNumber>
       <TypeId>1114</TypeId>
     </column>
-    <column id="4071" parent="4030" name="end_date">
+    <column id="4065" parent="4030" name="end_date">
       <Position>5</Position>
       <DataType>timestamp|0s</DataType>
       <NotNull>1</NotNull>
       <StateNumber>54651292</StateNumber>
       <TypeId>1114</TypeId>
     </column>
-    <column id="4072" parent="4030" name="iscancelled">
+    <column id="4066" parent="4030" name="iscancelled">
       <Position>6</Position>
       <DataType>boolean|0s</DataType>
       <NotNull>1</NotNull>
@@ -19724,7 +19672,7 @@ UC/12185635
       <DefaultExpression>false</DefaultExpression>
       <TypeId>16</TypeId>
     </column>
-    <column id="4073" parent="4030" name="isactive">
+    <column id="4067" parent="4030" name="isactive">
       <Position>7</Position>
       <DataType>boolean|0s</DataType>
       <NotNull>1</NotNull>
@@ -19732,26 +19680,26 @@ UC/12185635
       <DefaultExpression>true</DefaultExpression>
       <TypeId>16</TypeId>
     </column>
-    <column id="4074" parent="4030" name="participant_person_id">
+    <column id="4068" parent="4030" name="participant_person_id">
       <Position>8</Position>
       <DataType>integer|0s</DataType>
       <NotNull>1</NotNull>
       <StateNumber>54651292</StateNumber>
       <TypeId>23</TypeId>
     </column>
-    <column id="4075" parent="4030" name="maxbid">
+    <column id="4069" parent="4030" name="maxbid">
       <Position>9</Position>
       <DataType>real|0s</DataType>
       <StateNumber>54651292</StateNumber>
       <TypeId>700</TypeId>
     </column>
-    <column id="4076" parent="4030" name="winner">
+    <column id="4070" parent="4030" name="winner">
       <Position>10</Position>
       <DataType>varchar(512)|0s</DataType>
       <StateNumber>54651292</StateNumber>
       <TypeId>1043</TypeId>
     </column>
-    <index id="4077" parent="4030" name="auction_pkey">
+    <index id="4071" parent="4030" name="auction_pkey">
       <ObjectId>13753206</ObjectId>
       <StateNumber>54651292</StateNumber>
       <ColNames>id</ColNames>
@@ -19761,30 +19709,20 @@ UC/12185635
       <CollationIds>0</CollationIds>
       <ClassIds>1978</ClassIds>
     </index>
-    <key id="4078" parent="4030" name="auction_pkey">
+    <key id="4072" parent="4030" name="auction_pkey">
       <ObjectId>13753207</ObjectId>
       <StateNumber>54651292</StateNumber>
       <ColNames>id</ColNames>
       <Primary>1</Primary>
       <UnderlyingIndexName>auction_pkey</UnderlyingIndexName>
     </key>
-    <foreign-key id="4079" parent="4030" name="auction_fk1">
-      <ObjectId>13753293</ObjectId>
-      <StateNumber>54651306</StateNumber>
-      <ColNames>participant_person_id</ColNames>
-      <RefTableId>13753258</RefTableId>
-      <RefColPositions>2</RefColPositions>
-      <RefTableName>participant</RefTableName>
-      <RefKeyName>participant_pkey</RefKeyName>
-      <RefColNames>person_id</RefColNames>
-    </foreign-key>
-    <check id="4080" parent="4030" name="dates">
+    <check id="4073" parent="4030" name="dates">
       <ObjectId>13753292</ObjectId>
       <StateNumber>54651304</StateNumber>
       <ColNames>end_date</ColNames>
       <Predicate>end_date &gt; now()</Predicate>
     </check>
-    <trigger id="4081" parent="4030" name="tau_cancel">
+    <trigger id="4074" parent="4030" name="tau_cancel">
       <ObjectId>13753353</ObjectId>
       <StateNumber>54651352</StateNumber>
       <Turn>after-row</Turn>
@@ -19792,7 +19730,7 @@ UC/12185635
       <CallRoutineId>13753352</CallRoutineId>
       <ColumnIndices>6</ColumnIndices>
     </trigger>
-    <column id="4082" parent="4031" name="id">
+    <column id="4075" parent="4031" name="id">
       <Position>1</Position>
       <DataType>integer|0s</DataType>
       <NotNull>1</NotNull>
@@ -19800,21 +19738,21 @@ UC/12185635
       <DefaultExpression>nextval(&apos;bid_id_seq&apos;::regclass)</DefaultExpression>
       <TypeId>23</TypeId>
     </column>
-    <column id="4083" parent="4031" name="bid_date">
+    <column id="4076" parent="4031" name="bid_date">
       <Position>2</Position>
       <DataType>timestamp|0s</DataType>
       <NotNull>1</NotNull>
       <StateNumber>54651294</StateNumber>
       <TypeId>1114</TypeId>
     </column>
-    <column id="4084" parent="4031" name="price">
+    <column id="4077" parent="4031" name="price">
       <Position>3</Position>
       <DataType>real|0s</DataType>
       <NotNull>1</NotNull>
       <StateNumber>54651294</StateNumber>
       <TypeId>700</TypeId>
     </column>
-    <column id="4085" parent="4031" name="isinvalided">
+    <column id="4078" parent="4031" name="isinvalided">
       <Position>4</Position>
       <DataType>boolean|0s</DataType>
       <NotNull>1</NotNull>
@@ -19822,21 +19760,21 @@ UC/12185635
       <DefaultExpression>false</DefaultExpression>
       <TypeId>16</TypeId>
     </column>
-    <column id="4086" parent="4031" name="participant_person_id">
+    <column id="4079" parent="4031" name="participant_person_id">
       <Position>5</Position>
       <DataType>integer|0s</DataType>
       <NotNull>1</NotNull>
       <StateNumber>54651294</StateNumber>
       <TypeId>23</TypeId>
     </column>
-    <column id="4087" parent="4031" name="auction_id">
+    <column id="4080" parent="4031" name="auction_id">
       <Position>6</Position>
       <DataType>integer|0s</DataType>
       <NotNull>1</NotNull>
       <StateNumber>54651294</StateNumber>
       <TypeId>23</TypeId>
     </column>
-    <index id="4088" parent="4031" name="bid_pkey">
+    <index id="4081" parent="4031" name="bid_pkey">
       <ObjectId>13753215</ObjectId>
       <StateNumber>54651294</StateNumber>
       <ColNames>id</ColNames>
@@ -19846,24 +19784,14 @@ UC/12185635
       <CollationIds>0</CollationIds>
       <ClassIds>1978</ClassIds>
     </index>
-    <key id="4089" parent="4031" name="bid_pkey">
+    <key id="4082" parent="4031" name="bid_pkey">
       <ObjectId>13753216</ObjectId>
       <StateNumber>54651294</StateNumber>
       <ColNames>id</ColNames>
       <Primary>1</Primary>
       <UnderlyingIndexName>bid_pkey</UnderlyingIndexName>
     </key>
-    <foreign-key id="4090" parent="4031" name="bid_fk1">
-      <ObjectId>13753298</ObjectId>
-      <StateNumber>54651308</StateNumber>
-      <ColNames>participant_person_id</ColNames>
-      <RefTableId>13753258</RefTableId>
-      <RefColPositions>2</RefColPositions>
-      <RefTableName>participant</RefTableName>
-      <RefKeyName>participant_pkey</RefKeyName>
-      <RefColNames>person_id</RefColNames>
-    </foreign-key>
-    <foreign-key id="4091" parent="4031" name="bid_fk2">
+    <foreign-key id="4083" parent="4031" name="bid_fk2">
       <ObjectId>13753303</ObjectId>
       <StateNumber>54651312</StateNumber>
       <ColNames>auction_id</ColNames>
@@ -19873,28 +19801,28 @@ UC/12185635
       <RefKeyName>auction_pkey</RefKeyName>
       <RefColNames>id</RefColNames>
     </foreign-key>
-    <column id="4092" parent="4032" name="type">
+    <column id="4084" parent="4032" name="type">
       <Position>1</Position>
       <DataType>varchar(512)|0s</DataType>
       <NotNull>1</NotNull>
       <StateNumber>54651297</StateNumber>
       <TypeId>1043</TypeId>
     </column>
-    <column id="4093" parent="4032" name="participant_person_id">
+    <column id="4085" parent="4032" name="participant_person_id">
       <Position>2</Position>
       <DataType>integer|0s</DataType>
       <NotNull>1</NotNull>
       <StateNumber>54651297</StateNumber>
       <TypeId>23</TypeId>
     </column>
-    <column id="4094" parent="4032" name="auction_id">
+    <column id="4086" parent="4032" name="auction_id">
       <Position>3</Position>
       <DataType>integer|0s</DataType>
       <NotNull>1</NotNull>
       <StateNumber>54651297</StateNumber>
       <TypeId>23</TypeId>
     </column>
-    <column id="4095" parent="4032" name="message_id">
+    <column id="4087" parent="4032" name="message_id">
       <Position>4</Position>
       <DataType>integer|0s</DataType>
       <NotNull>1</NotNull>
@@ -19902,21 +19830,21 @@ UC/12185635
       <DefaultExpression>nextval(&apos;feed_message_message_id_seq&apos;::regclass)</DefaultExpression>
       <TypeId>23</TypeId>
     </column>
-    <column id="4096" parent="4032" name="message_message">
+    <column id="4088" parent="4032" name="message_message">
       <Position>5</Position>
       <DataType>varchar(512)|0s</DataType>
       <NotNull>1</NotNull>
       <StateNumber>54651297</StateNumber>
       <TypeId>1043</TypeId>
     </column>
-    <column id="4097" parent="4032" name="message_message_date">
+    <column id="4089" parent="4032" name="message_message_date">
       <Position>6</Position>
       <DataType>timestamp|0s</DataType>
       <NotNull>1</NotNull>
       <StateNumber>54651297</StateNumber>
       <TypeId>1114</TypeId>
     </column>
-    <index id="4098" parent="4032" name="feed_message_pkey">
+    <index id="4090" parent="4032" name="feed_message_pkey">
       <ObjectId>13753237</ObjectId>
       <StateNumber>54651297</StateNumber>
       <ColNames>message_id</ColNames>
@@ -19926,24 +19854,14 @@ UC/12185635
       <CollationIds>0</CollationIds>
       <ClassIds>1978</ClassIds>
     </index>
-    <key id="4099" parent="4032" name="feed_message_pkey">
+    <key id="4091" parent="4032" name="feed_message_pkey">
       <ObjectId>13753238</ObjectId>
       <StateNumber>54651297</StateNumber>
       <ColNames>message_id</ColNames>
       <Primary>1</Primary>
       <UnderlyingIndexName>feed_message_pkey</UnderlyingIndexName>
     </key>
-    <foreign-key id="4100" parent="4032" name="feed_message_fk1">
-      <ObjectId>13753313</ObjectId>
-      <StateNumber>54651315</StateNumber>
-      <ColNames>participant_person_id</ColNames>
-      <RefTableId>13753258</RefTableId>
-      <RefColPositions>2</RefColPositions>
-      <RefTableName>participant</RefTableName>
-      <RefKeyName>participant_pkey</RefKeyName>
-      <RefColNames>person_id</RefColNames>
-    </foreign-key>
-    <foreign-key id="4101" parent="4032" name="feed_message_fk2">
+    <foreign-key id="4092" parent="4032" name="feed_message_fk2">
       <ObjectId>13753318</ObjectId>
       <StateNumber>54651317</StateNumber>
       <ColNames>auction_id</ColNames>
@@ -19953,20 +19871,20 @@ UC/12185635
       <RefKeyName>auction_pkey</RefKeyName>
       <RefColNames>id</RefColNames>
     </foreign-key>
-    <check id="4102" parent="4032" name="type">
+    <check id="4093" parent="4032" name="type">
       <ObjectId>13753323</ObjectId>
       <StateNumber>54651318</StateNumber>
       <ColNames>type</ColNames>
       <Predicate>(type)::text = ANY ((ARRAY[&apos;comment&apos;::character varying, &apos;question&apos;::character varying, &apos;clarification&apos;::character varying])::text[])</Predicate>
     </check>
-    <column id="4103" parent="4033" name="participant_person_id">
+    <column id="4094" parent="4033" name="participant_person_id">
       <Position>1</Position>
       <DataType>integer|0s</DataType>
       <NotNull>1</NotNull>
       <StateNumber>54651296</StateNumber>
       <TypeId>23</TypeId>
     </column>
-    <column id="4104" parent="4033" name="message_id">
+    <column id="4095" parent="4033" name="message_id">
       <Position>2</Position>
       <DataType>integer|0s</DataType>
       <NotNull>1</NotNull>
@@ -19974,21 +19892,21 @@ UC/12185635
       <DefaultExpression>nextval(&apos;notification_message_id_seq&apos;::regclass)</DefaultExpression>
       <TypeId>23</TypeId>
     </column>
-    <column id="4105" parent="4033" name="message_message">
+    <column id="4096" parent="4033" name="message_message">
       <Position>3</Position>
       <DataType>varchar(512)|0s</DataType>
       <NotNull>1</NotNull>
       <StateNumber>54651296</StateNumber>
       <TypeId>1043</TypeId>
     </column>
-    <column id="4106" parent="4033" name="message_message_date">
+    <column id="4097" parent="4033" name="message_message_date">
       <Position>4</Position>
       <DataType>timestamp|0s</DataType>
       <NotNull>1</NotNull>
       <StateNumber>54651296</StateNumber>
       <TypeId>1114</TypeId>
     </column>
-    <index id="4107" parent="4033" name="notification_pkey">
+    <index id="4098" parent="4033" name="notification_pkey">
       <ObjectId>13753226</ObjectId>
       <StateNumber>54651296</StateNumber>
       <ColNames>message_id</ColNames>
@@ -19998,69 +19916,53 @@ UC/12185635
       <CollationIds>0</CollationIds>
       <ClassIds>1978</ClassIds>
     </index>
-    <key id="4108" parent="4033" name="notification_pkey">
+    <key id="4099" parent="4033" name="notification_pkey">
       <ObjectId>13753227</ObjectId>
       <StateNumber>54651296</StateNumber>
       <ColNames>message_id</ColNames>
       <Primary>1</Primary>
       <UnderlyingIndexName>notification_pkey</UnderlyingIndexName>
     </key>
-    <foreign-key id="4109" parent="4033" name="notification_fk1">
-      <ObjectId>13753308</ObjectId>
-      <StateNumber>54651314</StateNumber>
-      <ColNames>participant_person_id</ColNames>
-      <RefTableId>13753258</RefTableId>
-      <RefColPositions>2</RefColPositions>
-      <RefTableName>participant</RefTableName>
-      <RefKeyName>participant_pkey</RefKeyName>
-      <RefColNames>person_id</RefColNames>
-    </foreign-key>
-    <column id="4110" parent="4034" name="isbanned">
+    <column id="4100" parent="4034" name="isbanned">
       <Position>1</Position>
       <DataType>boolean|0s</DataType>
       <NotNull>1</NotNull>
-      <StateNumber>54651300</StateNumber>
+      <StateNumber>54655775</StateNumber>
       <DefaultExpression>false</DefaultExpression>
       <TypeId>16</TypeId>
     </column>
-    <column id="4111" parent="4034" name="person_id">
+    <column id="4101" parent="4034" name="person_id">
       <Position>2</Position>
       <DataType>integer|0s</DataType>
       <NotNull>1</NotNull>
-      <StateNumber>54651300</StateNumber>
+      <StateNumber>54655775</StateNumber>
       <DefaultExpression>nextval(&apos;participant_person_id_seq&apos;::regclass)</DefaultExpression>
       <TypeId>23</TypeId>
     </column>
-    <column id="4112" parent="4034" name="person_username">
+    <column id="4102" parent="4034" name="person_username">
       <Position>3</Position>
       <DataType>varchar(512)|0s</DataType>
       <NotNull>1</NotNull>
-      <StateNumber>54651300</StateNumber>
+      <StateNumber>54655775</StateNumber>
       <TypeId>1043</TypeId>
     </column>
-    <column id="4113" parent="4034" name="person_email">
+    <column id="4103" parent="4034" name="person_email">
       <Position>4</Position>
       <DataType>varchar(512)|0s</DataType>
       <NotNull>1</NotNull>
-      <StateNumber>54651300</StateNumber>
+      <StateNumber>54655775</StateNumber>
       <TypeId>1043</TypeId>
     </column>
-    <column id="4114" parent="4034" name="person_password">
+    <column id="4104" parent="4034" name="person_password">
       <Position>5</Position>
       <DataType>varchar(512)|0s</DataType>
       <NotNull>1</NotNull>
-      <StateNumber>54651300</StateNumber>
+      <StateNumber>54655775</StateNumber>
       <TypeId>1043</TypeId>
     </column>
-    <column id="4115" parent="4034" name="person_token">
-      <Position>6</Position>
-      <DataType>varchar(512)|0s</DataType>
-      <StateNumber>54651300</StateNumber>
-      <TypeId>1043</TypeId>
-    </column>
-    <index id="4116" parent="4034" name="participant_pkey">
-      <ObjectId>13753266</ObjectId>
-      <StateNumber>54651300</StateNumber>
+    <index id="4105" parent="4034" name="participant_pkey">
+      <ObjectId>13753737</ObjectId>
+      <StateNumber>54655775</StateNumber>
       <ColNames>person_id</ColNames>
       <Unique>1</Unique>
       <Primary>1</Primary>
@@ -20068,9 +19970,9 @@ UC/12185635
       <CollationIds>0</CollationIds>
       <ClassIds>1978</ClassIds>
     </index>
-    <index id="4117" parent="4034" name="participant_person_username_key">
-      <ObjectId>13753268</ObjectId>
-      <StateNumber>54651300</StateNumber>
+    <index id="4106" parent="4034" name="participant_person_username_key">
+      <ObjectId>13753739</ObjectId>
+      <StateNumber>54655775</StateNumber>
       <ColNames>person_username</ColNames>
       <Unique>1</Unique>
       <AccessMethodId>403</AccessMethodId>
@@ -20078,9 +19980,9 @@ UC/12185635
       <CollationNames>default</CollationNames>
       <ClassIds>3126</ClassIds>
     </index>
-    <index id="4118" parent="4034" name="participant_person_email_key">
-      <ObjectId>13753270</ObjectId>
-      <StateNumber>54651300</StateNumber>
+    <index id="4107" parent="4034" name="participant_person_email_key">
+      <ObjectId>13753741</ObjectId>
+      <StateNumber>54655775</StateNumber>
       <ColNames>person_email</ColNames>
       <Unique>1</Unique>
       <AccessMethodId>403</AccessMethodId>
@@ -20088,74 +19990,58 @@ UC/12185635
       <CollationNames>default</CollationNames>
       <ClassIds>3126</ClassIds>
     </index>
-    <index id="4119" parent="4034" name="participant_person_token_key">
-      <ObjectId>13753272</ObjectId>
-      <StateNumber>54651300</StateNumber>
-      <ColNames>person_token</ColNames>
-      <Unique>1</Unique>
-      <AccessMethodId>403</AccessMethodId>
-      <CollationIds>100</CollationIds>
-      <CollationNames>default</CollationNames>
-      <ClassIds>3126</ClassIds>
-    </index>
-    <key id="4120" parent="4034" name="participant_pkey">
-      <ObjectId>13753267</ObjectId>
-      <StateNumber>54651300</StateNumber>
+    <key id="4108" parent="4034" name="participant_pkey">
+      <ObjectId>13753738</ObjectId>
+      <StateNumber>54655775</StateNumber>
       <ColNames>person_id</ColNames>
       <Primary>1</Primary>
       <UnderlyingIndexName>participant_pkey</UnderlyingIndexName>
     </key>
-    <key id="4121" parent="4034" name="participant_person_username_key">
-      <ObjectId>13753269</ObjectId>
-      <StateNumber>54651300</StateNumber>
+    <key id="4109" parent="4034" name="participant_person_username_key">
+      <ObjectId>13753740</ObjectId>
+      <StateNumber>54655775</StateNumber>
       <ColNames>person_username</ColNames>
       <UnderlyingIndexName>participant_person_username_key</UnderlyingIndexName>
     </key>
-    <key id="4122" parent="4034" name="participant_person_email_key">
-      <ObjectId>13753271</ObjectId>
-      <StateNumber>54651300</StateNumber>
+    <key id="4110" parent="4034" name="participant_person_email_key">
+      <ObjectId>13753742</ObjectId>
+      <StateNumber>54655775</StateNumber>
       <ColNames>person_email</ColNames>
       <UnderlyingIndexName>participant_person_email_key</UnderlyingIndexName>
     </key>
-    <key id="4123" parent="4034" name="participant_person_token_key">
-      <ObjectId>13753273</ObjectId>
-      <StateNumber>54651300</StateNumber>
-      <ColNames>person_token</ColNames>
-      <UnderlyingIndexName>participant_person_token_key</UnderlyingIndexName>
-    </key>
-    <column id="4124" parent="4035" name="version">
+    <column id="4111" parent="4035" name="version">
       <Position>1</Position>
       <DataType>integer|0s</DataType>
       <NotNull>1</NotNull>
       <StateNumber>54651301</StateNumber>
       <TypeId>23</TypeId>
     </column>
-    <column id="4125" parent="4035" name="title">
+    <column id="4112" parent="4035" name="title">
       <Position>2</Position>
       <DataType>varchar(512)|0s</DataType>
       <StateNumber>54651301</StateNumber>
       <TypeId>1043</TypeId>
     </column>
-    <column id="4126" parent="4035" name="description">
+    <column id="4113" parent="4035" name="description">
       <Position>3</Position>
       <DataType>varchar(512)|0s</DataType>
       <StateNumber>54651301</StateNumber>
       <TypeId>1043</TypeId>
     </column>
-    <column id="4127" parent="4035" name="alteration_date">
+    <column id="4114" parent="4035" name="alteration_date">
       <Position>4</Position>
       <DataType>timestamp|0s</DataType>
       <StateNumber>54651301</StateNumber>
       <TypeId>1114</TypeId>
     </column>
-    <column id="4128" parent="4035" name="auction_id">
+    <column id="4115" parent="4035" name="auction_id">
       <Position>5</Position>
       <DataType>integer|0s</DataType>
       <NotNull>1</NotNull>
       <StateNumber>54651301</StateNumber>
       <TypeId>23</TypeId>
     </column>
-    <index id="4129" parent="4035" name="textual_description_pkey">
+    <index id="4116" parent="4035" name="textual_description_pkey">
       <ObjectId>13753280</ObjectId>
       <StateNumber>54651301</StateNumber>
       <ColNames>version
@@ -20166,7 +20052,7 @@ auction_id</ColNames>
       <CollationIds>0,0</CollationIds>
       <ClassIds>1978,1978</ClassIds>
     </index>
-    <key id="4130" parent="4035" name="textual_description_pkey">
+    <key id="4117" parent="4035" name="textual_description_pkey">
       <ObjectId>13753281</ObjectId>
       <StateNumber>54651301</StateNumber>
       <ColNames>version
@@ -20174,7 +20060,7 @@ auction_id</ColNames>
       <Primary>1</Primary>
       <UnderlyingIndexName>textual_description_pkey</UnderlyingIndexName>
     </key>
-    <foreign-key id="4131" parent="4035" name="textual_description_fk1">
+    <foreign-key id="4118" parent="4035" name="textual_description_fk1">
       <ObjectId>13753324</ObjectId>
       <StateNumber>54651321</StateNumber>
       <ColNames>auction_id</ColNames>
@@ -20184,31 +20070,31 @@ auction_id</ColNames>
       <RefKeyName>auction_pkey</RefKeyName>
       <RefColNames>id</RefColNames>
     </foreign-key>
-    <argument id="4132" parent="4036">
+    <argument id="4119" parent="4036">
       <ArgumentDirection>R</ArgumentDirection>
       <DataType>void|0s</DataType>
     </argument>
-    <argument id="4133" parent="4037">
+    <argument id="4120" parent="4037">
       <ArgumentDirection>R</ArgumentDirection>
       <DataType>trigger|0s</DataType>
     </argument>
-    <argument id="4134" parent="4038">
+    <argument id="4121" parent="4038">
       <ArgumentDirection>R</ArgumentDirection>
       <DataType>trigger|0s</DataType>
     </argument>
-    <argument id="4135" parent="4039" name="p_dest">
+    <argument id="4122" parent="4039" name="p_dest">
       <Position>1</Position>
       <DataType>integer|0s</DataType>
     </argument>
-    <argument id="4136" parent="4039" name="p_notif">
+    <argument id="4123" parent="4039" name="p_notif">
       <Position>2</Position>
       <DataType>varchar|0s</DataType>
     </argument>
-    <argument id="4137" parent="4039">
+    <argument id="4124" parent="4039">
       <ArgumentDirection>R</ArgumentDirection>
       <DataType>void|0s</DataType>
     </argument>
-    <argument id="4138" parent="4040">
+    <argument id="4125" parent="4040">
       <ArgumentDirection>R</ArgumentDirection>
       <DataType>trigger|0s</DataType>
     </argument>

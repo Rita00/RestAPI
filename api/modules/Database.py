@@ -273,8 +273,8 @@ class Database(object):
 
     def listAuctions(self, param):
         cursor = self.connection.cursor()
-        sql = 'SELECT id, description FROM auction, textual_description WHERE auction.id = textual_description.auction_id AND (auction.code::text = %s OR textual_description.description like %s) AND end_date > %s'
-        cursor.execute(sql, (param, '%' + param + '%', 'now()'))
+        sql = 'SELECT id, description FROM auction, textual_description WHERE auction.id = textual_description.auction_id AND (auction.code::text = %s OR textual_description.description like %s) AND isactive = true'
+        cursor.execute(sql, (param, '%' + param + '%'))
         if cursor.rowcount < 1:
             res = []
         else:

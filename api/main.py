@@ -143,7 +143,7 @@ def listAllAuctions():
 
 @app.route('/dbproj/leiloes/<keyword>', methods=['GET'])
 @decode_auth_token
-def listCurrentAuctions(keyword):
+def listCurrentAuctions(username, keyword):
     """Listar os leilões que estão a decorrer"""
     try:
         auctions = db.listAuctions(keyword)
@@ -182,7 +182,7 @@ def bid(username, leilaoId, licictacao):
 
 @app.route('/dbproj/leilao/<leilaoId>', methods=['GET'])
 @decode_auth_token
-def detailsAuction(leilaoId):
+def detailsAuction(username, leilaoId):
     """Consultar os detalhes de um determinado leilão"""
     try:
         details = db.detailsAuction(leilaoId)
@@ -206,7 +206,7 @@ def writeFeedMessage(username, leilaoId):
     return jsonify({'messageId': message_id})
 
 
-@app.route('/dbproj/leilao/<leilaoId>', methods=['PUT'])
+@app.route('/dbproj/leilao/edit/<leilaoId>', methods=['PUT'])
 @decode_auth_token
 def editAuction(username, leilaoId):
     """Editar propriedades de um leilão"""

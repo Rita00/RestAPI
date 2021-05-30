@@ -120,3 +120,5 @@ SELECT person_username FROM bid, participant
                           WHERE bid.participant_person_id = participant.person_id and auction_id = 1
                           ORDER BY price desc
                           limit 1;
+
+SELECT id, description FROM auction, textual_description WHERE auction.id = textual_description.auction_id AND (auction.code::text = 'pesquisa' OR textual_description.description like '%pesquisa%') AND isactive = true

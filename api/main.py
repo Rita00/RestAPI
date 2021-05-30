@@ -327,7 +327,7 @@ def cancelAuction(username, leilaoId):
 
 
 @app.route('/dbproj/stats', methods=['GET'])
-@decode_auth_token
+@verify_token
 def stats(username):
     """
     Consultar estatisticas da applicação: \n

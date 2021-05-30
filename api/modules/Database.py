@@ -333,7 +333,7 @@ class Database(object):
         if cursor.rowcount < 1:
             res = []
         else:
-            res = [{"mensagem": row[0], "datatime": row[1]} for row in cursor.fetchall()]
+            res = [{"mensagem": row[0], "data": row[1]} for row in cursor.fetchall()]
         cursor.close()
         return res
 

@@ -272,13 +272,13 @@ class Database(object):
 
     def detailsAuction(self, auction_id):
         cursor = self.connection.cursor()
-        sqlAuction = 'SELECT id, end_date, description FROM auction, textual_description WHERE auction.id = textual_description.auction_id AND id = %s'
+        sqlAuction = 'SELECT distinct on (auction.id) auction.id, end_date, description, title FROM auction, textual_description WHERE auction.id = textual_description.auction_id AND id = %s ORDER BY auction.id, version desc'
         cursor.execute(sqlAuction, (auction_id,))
         if cursor.rowcount < 1:
             res = []
         else:
             row = cursor.fetchone()
-            res = {"leilãoId": row[0], "dataFim": row[1], "descricao": row[2]}
+            res = {"leilãoId": row[0], "dataFim": row[1], "descricao": row[2], 'titulo': row[3]}
             sqlMessages = 'SELECT message_id, message_message FROM feed_message WHERE auction_id = %s'
             cursor.execute(sqlMessages, (auction_id,))
             res['mensagens'] = [{"mensagemId": row[0], "mensagem": row[1]} for row in cursor.fetchall()]

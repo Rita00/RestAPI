@@ -167,3 +167,11 @@ SELECT person_id, id FROM participant, auction WHERE auction.participant_person_
 select participant_person_id from auction where id = 4;
 
 select participant_person_id, id from bid where auction_id = -1 union select participant_person_id, id from auction where id = -1;
+
+SELECT distinct on (auction.id) auction.id, description
+        FROM auction, textual_description WHERE auction.id = textual_description.auction_id and (auction.code::text = 'v1' OR textual_description.description like '%v1%') AND isactive = true ORDER BY auction.id, version desc;
+
+select * from textual_description where auction_id = 4;
+select distinct auction_id from auction, textual_description WHERE auction.id = textual_description.auction_id and (auction.code::text = 'v1' OR textual_description.description like '%v1%') AND isactive = true;
+
+SELECT distinct on (auction.id) auction.id, description FROM auction, textual_description WHERE auction.id = textual_description.auction_id AND auction_id = 4 ORDER BY auction.id, version desc;

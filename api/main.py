@@ -128,11 +128,11 @@ def createAuction(username):
     try:
         content = request.json
         valid = utils.validateTypes([username], [str])
-        valid = valid & utils.validateTypes(content, [int, float, str, str, str, str])
-        valid = valid & utils.validateDates([content['dataInicio'], content['dataFim']])
+        valid = valid & utils.validateTypes(content, [int, float, str, str, str])
+        valid = valid & utils.validateDates([content['dataFim']])
         if not valid:
             return jsonify({'erro': 404})
-        id = db.createAuction(username, content['artigoId'], content['precoMinimo'], content['dataInicio'],
+        id = db.createAuction(username, content['artigoId'], content['precoMinimo'],
                               content['dataFim'], content['titulo'], content['descricao'])
     except Exception as e:
         db.connection.rollback()

@@ -148,3 +148,7 @@ ORDER BY auction.id, version desc;
 
 select * from bid;
 select * from textual_description;
+
+SELECT id
+FROM auction
+WHERE code= 111111111 ORDER BY begin_date desc

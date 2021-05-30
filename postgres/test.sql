@@ -122,3 +122,29 @@ SELECT person_username FROM bid, participant
                           limit 1;
 
 SELECT id, description FROM auction, textual_description WHERE auction.id = textual_description.auction_id AND (auction.code::text = 'pesquisa' OR textual_description.description like '%pesquisa%') AND isactive = true
+
+SELECT t.auction_id, t.description
+FROM textual_description t
+WHERE (t.auction_id,t.version)
+        IN (SELECT DISTINCT a.id, MAX(t.version)
+        FROM auction a, textual_description t
+        WHERE a.id = t.auction_id
+        GROUP BY a.id
+        HAVING a.id IN (
+        SELECT b.auction_id
+        FROM bid b
+        WHERE b.participant_person_id IN (
+        SELECT p.person_id
+        FROM participant p
+        WHERE p.person_username LIKE 'dylan'
+                                )
+                            )
+                        )
+
+SELECT distinct on (auction.id) auction.id, description, version
+FROM auction, bid, textual_description
+WHERE auction.id = bid.auction_id and auction.id = textual_description.auction_id and (bid.participant_person_id = 15 or auction.participant_person_id = 15)
+ORDER BY auction.id, version desc;
+
+select * from bid;
+select * from textual_description;

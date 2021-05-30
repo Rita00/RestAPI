@@ -111,26 +111,15 @@ class Database(object):
         :return: leilões
         """
         cursor = self.connection.cursor()
-        cursor.execute("""
-                        SELECT t.auction_id, t.description
-                        FROM textual_description t
-                        WHERE (t.auction_id,t.version) IN (
-                            SELECT DISTINCT a.id, MAX(t.version)
-                            FROM auction a,
-                                 textual_description t
-                            WHERE a.id = t.auction_id
-                            GROUP BY a.id
-                            HAVING a.id IN (
-                                SELECT b.auction_id
-                                FROM bid b
-                                WHERE b.participant_person_id IN (
-                                    SELECT p.person_id
-                                    FROM participant p
-                                    WHERE p.person_username LIKE %s
-                                )
-                            )
-                        );
-                        """, (username,))
+        getPersonId = 'SELECT person_id FROM participant WHERE person_username = %s'
+        cursor.execute(getPersonId, (username,))
+        persoId = cursor.fetchone()[0]
+        cursor.execute(
+            """SELECT distinct on (auction.id) auction.id, description, version 
+            FROM auction, bid, textual_description 
+            WHERE auction.id = bid.auction_id and auction.id = textual_description.auction_id and (bid.participant_person_id = %s or auction.participant_person_id = %s) 
+            ORDER BY auction.id, version desc""",
+            (persoId, persoId))
         if cursor.rowcount < 1:
             res = []
         else:

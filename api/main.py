@@ -143,7 +143,7 @@ def listAllAuctions(username):
 
 @app.route('/dbproj/leiloes/<keyword>', methods=['GET'])
 @decode_auth_token
-def listCurrentAuctions(username, keyword):
+def listCurrentAuctionsByKeyword(username, keyword):
     """Listar os leilões que estão a decorrer"""
     try:
         auctions = db.listAuctions(keyword)

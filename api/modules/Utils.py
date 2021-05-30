@@ -1,6 +1,36 @@
 import datetime
 
 
+def isfloat(string):
+    """
+    Verifica se uma string é um float
+
+    :param string: string
+
+    :return: boolean
+    """
+    try:
+        float(string)
+    except ValueError:
+        return False
+    return True
+
+
+def isint(string):
+    """
+    Verifica se um numero é um inteiro
+
+    :param string: string
+
+    :return: boolean
+    """
+    try:
+        int(string)
+    except ValueError:
+        return False
+    return True
+
+
 def validateTypes(content, types):
     """
     Verifica os tipos do content com os types
@@ -10,10 +40,17 @@ def validateTypes(content, types):
 
     :return: boolean
     """
+    if len(content) != len(types):
+        return "content and types does not have the same length!"
     if type(content) is dict:
         content = list(content.values())
     for i in range(len(content)):
         if type(content[i]) is not types[i] or types[i] is None:
+            if type(content[i]) is str:
+                if types[i] is int and isint(content[i]):
+                    continue
+                elif types[i] is float and isfloat(content[i]):
+                    continue
             return False
     return True
 
@@ -54,5 +91,10 @@ def validateDate(date):
 
 
 if __name__ == '__main__':
-    d = "2021-06-10 00:00"
-    print(validateDates([d]))
+    x = "202020"
+    y = "2020.20"
+    z = "2020.20dsdd"
+    zz = "202020dsdd"
+    print(isint(x),isint(y), isint(z), isint(zz))
+    print(isfloat(x), isfloat(y), isfloat(z), isfloat(zz))
+    print(validateTypes([x, y, z, zz], [int, float, float, int]))

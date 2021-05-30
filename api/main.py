@@ -148,7 +148,9 @@ def listAllAuctions(username):
     """Listar Todos os leilões existentes"""
     try:
         auctions = db.listAllAuctions()
+        db.connection.commit()
     except Exception as e:
+        db.connection.rollback()
         print(e)
         return jsonify({'erro': 401})
     return jsonify(auctions)

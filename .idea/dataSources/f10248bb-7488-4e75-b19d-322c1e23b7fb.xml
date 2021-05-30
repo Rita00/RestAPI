@@ -12450,10 +12450,10 @@ true posixrules
 14419||10|U|G
 14419||12185635|U|G</Grants>
       <Owner>vtxuzrplfviiht</Owner>
-      <IntrospectionStateNumber>54594237</IntrospectionStateNumber>
+      <IntrospectionStateNumber>54617302</IntrospectionStateNumber>
       <Current>1</Current>
       <Relations>sequence|table|13067439|13067441|2
-sequence|table|13132429|13132431|1
+sequence|table|13748116|13748118|1
 sequence|table|13047510|13047512|1
 sequence|table|13047527|13047529|4
 sequence|table|13047538|13047540|1
@@ -25158,7 +25158,7 @@ sequence|table|13047555|13047557|2
       <Comment>standard public schema</Comment>
       <StateNumber>51439847</StateNumber>
       <Owner>vtxuzrplfviiht</Owner>
-      <IntrospectionStateNumber>54594243</IntrospectionStateNumber>
+      <IntrospectionStateNumber>54617313</IntrospectionStateNumber>
       <Current>1</Current>
     </schema>
     <extension id="4009" parent="1281" name="plpgsql">
@@ -25265,9 +25265,9 @@ sequence|table|13047555|13047557|2
       <DataType>integer|0s</DataType>
     </sequence>
     <sequence id="4022" parent="4008" name="auction_id_seq">
-      <ObjectId>13132429</ObjectId>
+      <ObjectId>13748116</ObjectId>
       <Owner>vtxuzrplfviiht</Owner>
-      <StateNumber>54149574</StateNumber>
+      <StateNumber>54601935</StateNumber>
       <DataType>integer|0s</DataType>
     </sequence>
     <sequence id="4023" parent="4008" name="bid_id_seq">
@@ -25310,9 +25310,9 @@ sequence|table|13047555|13047557|2
       <StateNumber>54220272</StateNumber>
     </table>
     <table id="4030" parent="4008" name="auction">
-      <ObjectId>13132431</ObjectId>
+      <ObjectId>13748118</ObjectId>
       <Owner>vtxuzrplfviiht</Owner>
-      <StateNumber>54571844</StateNumber>
+      <StateNumber>54601944</StateNumber>
     </table>
     <table id="4031" parent="4008" name="bid">
       <ObjectId>13047512</ObjectId>
@@ -25561,7 +25561,7 @@ sequence|table|13047555|13047557|2
       <Position>1</Position>
       <DataType>integer|0s</DataType>
       <NotNull>1</NotNull>
-      <StateNumber>54149574</StateNumber>
+      <StateNumber>54601935</StateNumber>
       <DefaultExpression>nextval(&apos;auction_id_seq&apos;::regclass)</DefaultExpression>
       <TypeId>23</TypeId>
     </column>
@@ -25569,35 +25569,35 @@ sequence|table|13047555|13047557|2
       <Position>2</Position>
       <DataType>bigint|0s</DataType>
       <NotNull>1</NotNull>
-      <StateNumber>54149574</StateNumber>
+      <StateNumber>54601935</StateNumber>
       <TypeId>20</TypeId>
     </column>
     <column id="4065" parent="4030" name="min_price">
       <Position>3</Position>
       <DataType>real|0s</DataType>
       <NotNull>1</NotNull>
-      <StateNumber>54149574</StateNumber>
+      <StateNumber>54601935</StateNumber>
       <TypeId>700</TypeId>
     </column>
     <column id="4066" parent="4030" name="begin_date">
       <Position>4</Position>
       <DataType>timestamp|0s</DataType>
       <NotNull>1</NotNull>
-      <StateNumber>54149574</StateNumber>
+      <StateNumber>54601935</StateNumber>
       <TypeId>1114</TypeId>
     </column>
     <column id="4067" parent="4030" name="end_date">
       <Position>5</Position>
       <DataType>timestamp|0s</DataType>
       <NotNull>1</NotNull>
-      <StateNumber>54149574</StateNumber>
+      <StateNumber>54601935</StateNumber>
       <TypeId>1114</TypeId>
     </column>
     <column id="4068" parent="4030" name="iscancelled">
       <Position>6</Position>
       <DataType>boolean|0s</DataType>
       <NotNull>1</NotNull>
-      <StateNumber>54149574</StateNumber>
+      <StateNumber>54601935</StateNumber>
       <DefaultExpression>false</DefaultExpression>
       <TypeId>16</TypeId>
     </column>
@@ -25605,7 +25605,7 @@ sequence|table|13047555|13047557|2
       <Position>7</Position>
       <DataType>boolean|0s</DataType>
       <NotNull>1</NotNull>
-      <StateNumber>54149574</StateNumber>
+      <StateNumber>54601935</StateNumber>
       <DefaultExpression>true</DefaultExpression>
       <TypeId>16</TypeId>
     </column>
@@ -25613,24 +25613,24 @@ sequence|table|13047555|13047557|2
       <Position>8</Position>
       <DataType>integer|0s</DataType>
       <NotNull>1</NotNull>
-      <StateNumber>54149574</StateNumber>
+      <StateNumber>54601935</StateNumber>
       <TypeId>23</TypeId>
     </column>
     <column id="4071" parent="4030" name="maxbid">
       <Position>9</Position>
       <DataType>real|0s</DataType>
-      <StateNumber>54149574</StateNumber>
+      <StateNumber>54601935</StateNumber>
       <TypeId>700</TypeId>
     </column>
     <column id="4072" parent="4030" name="winner">
       <Position>10</Position>
       <DataType>varchar(512)|0s</DataType>
-      <StateNumber>54149574</StateNumber>
+      <StateNumber>54601935</StateNumber>
       <TypeId>1043</TypeId>
     </column>
     <index id="4073" parent="4030" name="auction_pkey">
-      <ObjectId>13132440</ObjectId>
-      <StateNumber>54149574</StateNumber>
+      <ObjectId>13748127</ObjectId>
+      <StateNumber>54601935</StateNumber>
       <ColNames>id</ColNames>
       <Unique>1</Unique>
       <Primary>1</Primary>
@@ -25639,20 +25639,19 @@ sequence|table|13047555|13047557|2
       <ClassIds>1978</ClassIds>
     </index>
     <key id="4074" parent="4030" name="auction_pkey">
-      <ObjectId>13132441</ObjectId>
-      <StateNumber>54149574</StateNumber>
+      <ObjectId>13748128</ObjectId>
+      <StateNumber>54601935</StateNumber>
       <ColNames>id</ColNames>
       <Primary>1</Primary>
       <UnderlyingIndexName>auction_pkey</UnderlyingIndexName>
     </key>
-    <trigger id="4075" parent="4030" name="tau_cancel">
-      <ObjectId>13747578</ObjectId>
-      <StateNumber>54594218</StateNumber>
-      <Turn>after-row</Turn>
-      <Events>U</Events>
-      <CallRoutineId>13746406</CallRoutineId>
-      <ColumnIndices>6</ColumnIndices>
-    </trigger>
+    <check id="4075" parent="4030" name="dates">
+      <ObjectId>13748129</ObjectId>
+      <StateNumber>54601944</StateNumber>
+      <ColNames>end_date
+begin_date</ColNames>
+      <Predicate>end_date &gt; begin_date</Predicate>
+    </check>
     <column id="4076" parent="4031" name="id">
       <Position>1</Position>
       <DataType>integer|0s</DataType>

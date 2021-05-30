@@ -102,7 +102,7 @@ CREATE TABLE admin_participant
 
 
 ALTER TABLE auction
-    ADD CONSTRAINT dates CHECK (end_date > now());
+    ADD CONSTRAINT dates CHECK (end_date > begin_date);
 ALTER TABLE auction
     ADD CONSTRAINT auction_fk1 FOREIGN KEY (participant_person_id) REFERENCES participant (person_id);
 ALTER TABLE bid

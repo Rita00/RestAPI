@@ -143,7 +143,7 @@ def createAuction(username):
 
 @app.route('/dbproj/leiloes', methods=['GET'])
 @decode_auth_token
-def listAllAuctions():
+def listAllAuctions(username):
     """Listar Todos os leilões existentes"""
     try:
         auctions = db.listAllAuctions()
@@ -155,7 +155,7 @@ def listAllAuctions():
 
 @app.route('/dbproj/leiloes/<keyword>', methods=['GET'])
 @decode_auth_token
-def listCurrentAuctions(keyword):
+def listCurrentAuctions(username, keyword):
     """Listar os leilões que estão a decorrer"""
     try:
         valid = utils.validateTypes([keyword], [str])
@@ -193,6 +193,8 @@ def bid(username, leilaoId, licictacao):
         if not valid:
             return jsonify({'erro': 404})
         bid_id = db.bid(username, leilaoId, licictacao)
+        if bid_id == 'inactive':
+            return jsonify({'erro': 'O leilão está inativo'})
     except Exception as e:
         print(e)
         return jsonify({'erro': 401})
@@ -201,7 +203,7 @@ def bid(username, leilaoId, licictacao):
 
 @app.route('/dbproj/leilao/<leilaoId>', methods=['GET'])
 @decode_auth_token
-def detailsAuction(leilaoId):
+def detailsAuction(username, leilaoId):
     """Consultar os detalhes de um determinado leilão"""
     try:
         valid = utils.validateTypes([leilaoId], [int])
@@ -232,7 +234,7 @@ def writeFeedMessage(username, leilaoId):
     return jsonify({'messageId': message_id})
 
 
-@app.route('/dbproj/leilao/<leilaoId>', methods=['PUT'])
+@app.route('/dbproj/leilao/edit/<leilaoId>', methods=['PUT'])
 @decode_auth_token
 def editAuction(username, leilaoId):
     """Editar propriedades de um leilão"""
@@ -256,7 +258,7 @@ def editAuction(username, leilaoId):
 
 @app.route('/dbproj/leilao/checkFinish', methods=['PUT'])
 @decode_auth_token
-def finishAuction():
+def finishAuction(username):
     """Terminar leilão na data, hora e minuto marcados"""
     try:
         db.finishAuctions()
@@ -278,6 +280,30 @@ def ban(username, user):
         print(e)
         return jsonify({'erro': 401})
     return jsonify({'adminId': admin_id, 'userId': user_id})
+
+
+@app.route('/dbproj/leilao/cancel/<leilaoId>', methods=['PUT'])
+@decode_auth_token
+def cancelAuction(username, leilaoId):
+    """Um administrador pode cancelar um leilão"""
+    try:
+        valid = utils.validateTypes([username, leilaoId], [str, int])
+        if not valid:
+            return jsonify({'erro': 404})
+        res = db.cancelAuction(leilaoId, username)
+        db.connection.commit()
+        if res == "notAdmin":
+            return jsonify({'erro': "Sem permissões de administrador!"})
+        elif res == "noAuction":
+            return jsonify({'erro': "O leilão não existe!"})
+        elif res == "inactive":
+            return jsonify({'erro': "O leilão já está cancelado!"})
+        else:
+            return jsonify(res)
+    except Exception as e:
+        db.connection.rollback()
+        print(e)
+        return jsonify({'erro': 401})
 
 
 @app.route('/')

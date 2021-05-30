@@ -148,7 +148,9 @@ def listAllAuctions(username):
     """Listar Todos os leilões existentes"""
     try:
         auctions = db.listAllAuctions()
+        db.connection.commit()
     except Exception as e:
+        db.connection.rollback()
         print(e)
         return jsonify({'erro': 401})
     return jsonify(auctions)
@@ -163,10 +165,15 @@ def listCurrentAuctionsByKeyword(username, keyword):
         if not valid:
             return jsonify({'erro': 404})
         auctions = db.listAuctions(keyword)
+        if auctions == "noResults":
+            db.connection.commit()
+            return jsonify({'Ups': 'Sem resultados para esta pesquisa!'})
+        db.connection.commit()
+        return jsonify(auctions)
     except Exception as e:
+        db.connection.rollback()
         print(e)
         return jsonify({'erro': 401})
-    return jsonify(auctions)
 
 
 @app.route(f'/dbproj/user/leiloes', methods=['GET'])
@@ -257,6 +264,7 @@ def editAuction(username, leilaoId):
         print(e)
         return jsonify({'erro': 401})
 
+
 @app.route('/dbproj/inbox', methods=['GET'])
 @verify_token
 def getNotifications(username):
@@ -271,6 +279,7 @@ def getNotifications(username):
         db.connection.rollback()
         print(e)
         return jsonify({'erro': 401})
+
 
 @app.route('/dbproj/leilao/checkFinish', methods=['PUT'])
 def finishAuction():
@@ -373,7 +382,7 @@ if __name__ == '__main__':
     SECRET = os.environ.get('SECRET')
     '''
 
-    #TO REMOVE
+    # TO REMOVE
     BIDYOURAUCTION_HOST = "ec2-34-254-69-72.eu-west-1.compute.amazonaws.com"
     BIDYOURAUCTION_PORT = "5432"
     BIDYOURAUCTION_DB = "das7ket3c5aarn"

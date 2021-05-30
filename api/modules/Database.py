@@ -254,24 +254,31 @@ class Database(object):
 
     def listAuctions(self, param):
         cursor = self.connection.cursor()
-        sql = 'SELECT id, description FROM auction, textual_description WHERE auction.id = textual_description.auction_id AND (auction.code::text = %s OR textual_description.description like %s) AND isactive = true'
-        cursor.execute(sql, (param, '%' + param + '%'))
+        # Verifica se em alguma versão existe a descrição a pesquisar
+        checkTextualDescription = 'select distinct auction_id from auction, textual_description WHERE auction.id = textual_description.auction_id and (auction.code::text = %s OR textual_description.description like %s) AND isactive = true'
+        cursor.execute(checkTextualDescription, (param, '%' + param + '%'))
+        # Não há o parametro a pesquisar
         if cursor.rowcount < 1:
-            res = []
-        else:
-            res = [{"leilaoId": row[0], "descricao": row[1]} for row in cursor.fetchall()]
+            cursor.close()
+            return 'noResults'
+
+        id_auction = cursor.fetchone()[0]
+
+        lastDescriptions = 'SELECT distinct on (auction.id) auction.id, description FROM auction, textual_description WHERE auction.id = textual_description.auction_id AND auction_id = %s ORDER BY auction.id, version desc'
+        cursor.execute(lastDescriptions, (id_auction,))
+        res = [{"leilaoId": row[0], "descricao": row[1]} for row in cursor.fetchall()]
         cursor.close()
         return res
 
     def detailsAuction(self, auction_id):
         cursor = self.connection.cursor()
-        sqlAuction = 'SELECT id, end_date, description FROM auction, textual_description WHERE auction.id = textual_description.auction_id AND id = %s'
+        sqlAuction = 'SELECT distinct on (auction.id) auction.id, end_date, description, title FROM auction, textual_description WHERE auction.id = textual_description.auction_id AND id = %s ORDER BY auction.id, version desc'
         cursor.execute(sqlAuction, (auction_id,))
         if cursor.rowcount < 1:
             res = []
         else:
             row = cursor.fetchone()
-            res = {"leilãoId": row[0], "dataFim": row[1], "descricao": row[2]}
+            res = {"leilãoId": row[0], "dataFim": row[1], "descricao": row[2], 'titulo': row[3]}
             sqlMessages = 'SELECT message_id, message_message FROM feed_message WHERE auction_id = %s'
             cursor.execute(sqlMessages, (auction_id,))
             res['mensagens'] = [{"mensagemId": row[0], "mensagem": row[1]} for row in cursor.fetchall()]

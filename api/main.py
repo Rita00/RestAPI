@@ -253,6 +253,7 @@ def editAuction(username, leilaoId):
             return jsonify({'erro': 401})
         return jsonify(res)
     except Exception as e:
+        db.connection.rollback()
         print(e)
         return jsonify({'erro': 401})
 
@@ -264,6 +265,7 @@ def finishAuction(username):
     try:
         db.finishAuctions()
     except Exception as e:
+        db.connection.rollback()
         print(e)
         return jsonify({'erro': 401})
 

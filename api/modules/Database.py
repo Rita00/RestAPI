@@ -375,7 +375,7 @@ class Database(object):
         if cursor.rowcount < 1:
             cursor.close()
             return "noAuction"
-        sqlCancel = 'UPDATE auction SET isactive = false WHERE id = %s'
+        sqlCancel = 'UPDATE auction SET iscancelled = true, isactive = false WHERE id = %s'
         cursor.execute(sqlCancel, (leilaoId,))
         cursor.close()
         return {"leilaoId": leilaoId, "Estado": "Cancelado"}

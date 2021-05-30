@@ -152,3 +152,11 @@ select * from textual_description;
 SELECT id
 FROM auction
 WHERE code= 111111111 ORDER BY begin_date desc
+
+UPDATE auction SET iscancelled = true, isactive = false WHERE id = 5;
+
+SELECT person_id, id FROM participant, auction WHERE auction.participant_person_id = participant.person_id AND auction.id = 5;
+
+select participant_person_id from auction where id = 4;
+
+select participant_person_id, id from bid where auction_id = -1 union select participant_person_id, id from auction where id = -1;

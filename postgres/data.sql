@@ -131,9 +131,9 @@ ALTER TABLE admin_participant
 --TRIGGERS=========================================
 
 --send Notification
-CREATE OR REPLACE PROCEDURE sendNotification(p_dest participant.person_id%type, p_notif notification.message_message%type) 
+CREATE OR REPLACE PROCEDURE sendNotification(p_dest participant.person_id%type, p_notif notification.message_message%type)
 LANGUAGE plpgsql
-AS $$ 
+AS $$
 BEGIN
     INSERT INTO notification (participant_person_id, message_message, message_message_date)
 	VALUES (p_dest, p_notif, NOW());
@@ -141,9 +141,9 @@ END;
 $$;
 
 --drop
-DROP TRIGGER IF EXISTS t_ban ON admin_participant;
 DROP FUNCTION IF EXISTS  participant_banned() CASCADE;
 DROP PROCEDURE IF EXISTS  public.finish_auctions() CASCADE;
+DROP function IF EXISTS  sendNotification CASCADE;
 
 --participant banned
 CREATE OR REPLACE FUNCTION participant_banned()
@@ -188,11 +188,38 @@ BEGIN
     RETURN new;
 END;
 $$;
+
+DROP TRIGGER IF EXISTS tai_ban ON admin_participant;
 CREATE TRIGGER tai_ban
     AFTER INSERT
     ON admin_participant
     FOR EACH ROW
     EXECUTE PROCEDURE participant_banned();
+
+CREATE OR REPLACE FUNCTION send_notification_cancel() RETURNS TRIGGER
+LANGUAGE plpgsql
+AS $$
+    DECLARE c1 cursor for
+        select participant_person_id, id from bid where auction_id = NEW.id union select participant_person_id, id from auction where id = NEW.id;
+BEGIN
+    for r in c1
+        loop
+         call public.sendNotification(r.participant_person_id, 'O leilao ' || r.id || ' foi cancelado!');
+        end loop;
+    return new;
+END;
+$$;
+UPDATE auction SET iscancelled = true, isactive = false WHERE id = 5;
+DROP TRIGGER IF EXISTS tau_cancel ON auction;
+--- Create
+CREATE TRIGGER tau_cancel
+    AFTER UPDATE OF iscancelled
+    ON auction
+    FOR EACH ROW
+    EXECUTE PROCEDURE send_notification_cancel();
+
+
+
 
 
 --finished auctions
@@ -218,6 +245,8 @@ BEGIN
         end loop;
 END;
 $$;
+
+
 --DADOS TESTE===========================================
 --Pessoas teste
 INSERT INTO participant (person_id, person_username, person_email, person_password)

@@ -6,7 +6,7 @@ DROP TABLE IF EXISTS admin CASCADE;
 DROP TABLE IF EXISTS participant CASCADE;
 DROP TABLE IF EXISTS textual_description CASCADE;
 DROP TABLE IF EXISTS admin_auction CASCADE;
-DROP TABLE IF EXISTS admin_user CASCADE;
+DROP TABLE IF EXISTS admin_participant CASCADE;
 
 --TABELAS===========================================
 CREATE TABLE auction
@@ -148,6 +148,20 @@ CREATE OR REPLACE FUNCTION participant_banned()
 RETURNS TRIGGER
 LANGUAGE plpgsql
 AS $$
+DECLARE
+    c1 cursor for
+        SELECT DISTINCT b.participant_person_id
+        FROM bid b, auction a
+        WHERE b.auction_id IN (
+            SELECT DISTINCT auction.id
+            FROM auction,bid
+            WHERE new.participant_person_id=bid.participant_person_id AND bid.auction_id=auction.id
+            );
+    c2 cursor for
+        SELECT DISTINCT a.id
+        FROM bid b, auction a
+        WHERE b.auction_id=a.id AND new.participant_person_id=b.participant_person_id;
+    v_banned_id admin_participant.admin_person_id%type;
 BEGIN
     -- ban participant
     UPDATE participant SET isbanned=True WHERE new.participant_person_id=person_id;
@@ -181,8 +195,18 @@ BEGIN
         WHERE new.participant_person_id!=participant_person_id
         GROUP BY aid
     );
-    -- laments the incomodo
-    -- TODO
+    -- write in the feed
+    v_banned_id = new.participant_person_id;
+    for auction in c2
+        loop
+            INSERT INTO feed_message(type, participant_person_id, auction_id, message_message, message_message_date)
+            VALUES('comment', v_banned_id, auction.id, 'Lamentamos o incomodo, um utilizador foi banido', NOW());
+        end loop;
+    -- notify people
+    for person in c1
+        loop
+            call public.sendNotification(person.participant_person_id, 'Lamentamos o incomodo, um utilizador foi banido');
+        end loop;
     RETURN new;
 END;
 $$;
@@ -284,8 +308,8 @@ VALUES (1, 'Leilao -2', 'Desc v1', '2021-05-24', -2);
 
 --Licitacoes teste
 INSERT INTO bid(bid_date, price, participant_person_id, auction_id)
-VALUES (now(), 30.00, -1, -1);
+VALUES (now(), 50.00, -5, -1);
 INSERT INTO bid(bid_date, price, participant_person_id, auction_id)
-VALUES (now(), 40.00, -1, -1);
+VALUES (now(), 50.00, -5, -1);
 INSERT INTO bid(bid_date, price, participant_person_id, auction_id)
-VALUES (now(), 40.00, -1, -2);
+VALUES (now(), 50.00, -5, -2);

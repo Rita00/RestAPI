@@ -167,3 +167,12 @@ SELECT person_id, id FROM participant, auction WHERE auction.participant_person_
 select participant_person_id from auction where id = 4;
 
 select participant_person_id, id from bid where auction_id = -1 union select participant_person_id, id from auction where id = -1;
+
+
+SELECT DISTINCT b.participant_person_id
+FROM bid b, auction a
+WHERE b.auction_id IN (
+    SELECT DISTINCT auction.id
+    FROM auction,bid
+    WHERE -1=bid.participant_person_id AND bid.auction_id=auction.id
+    );

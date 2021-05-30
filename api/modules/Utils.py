@@ -106,16 +106,4 @@ def validateDate(date):
 
 
 if __name__ == '__main__':
-    x = "202020"
-    y = "2020.20"
-    z = "2020.20dsdd"
-    zz = "202020dsdd"
-    e1 = 'dylan@hotmail.com'
-    e2 = '@hotmail.com'
-    e3 = 'aaa@.com'
-    e4 = 'aa@aa.coodwofkejf.com'
-    e5 = '-@aa.com'
-    print(isemail(e1),isemail(e2),isemail(e3),isemail(e4),isemail(e5))
-    # print(isint(x),isint(y), isint(z), isint(zz))
-    # print(isfloat(x), isfloat(y), isfloat(z), isfloat(zz))
-    # print(validateTypes([x, y, z, zz], [int, float, float]))
+    pass

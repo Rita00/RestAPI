@@ -454,8 +454,3 @@ class Database(object):
             res3 = cursor.fetchone()[0]
         return res1, res2, res3
 
-
-if __name__ == '__main__':
-    # testar codigo desta classe aqui
-    db = Database("bidyourauction", "bidyourauction", "docker.for.mac.localhost", "5432", "bidyourauction_db")
-    db.print()

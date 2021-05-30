@@ -83,6 +83,7 @@ def signUp():
     try:
         content = request.json
         valid = utils.validateTypes(content, [str, str, str])
+        valid = valid & utils.isemail(content['email'])
         if not valid:
             return jsonify({'erro': 404})
         id = db.signUp(content['username'], content['email'], content['password'])

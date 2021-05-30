@@ -1,11 +1,26 @@
 import datetime
+import re
+
+
+def isemail(string):
+    """
+    Verifica se uma string é um email
+
+    :param string: email a verificar
+
+    :return: boolean
+    """
+    regex = '^(\w|\.|\_|\-)+[@](\w|\_|\-|\.)+[.]\w{2,3}$'
+    if re.search(regex, string):
+        return True
+    return False
 
 
 def isfloat(string):
     """
     Verifica se uma string é um float
 
-    :param string: string
+    :param string: string a verificar
 
     :return: boolean
     """
@@ -20,7 +35,7 @@ def isint(string):
     """
     Verifica se um numero é um inteiro
 
-    :param string: string
+    :param string: string a verificar
 
     :return: boolean
     """
@@ -95,6 +110,11 @@ if __name__ == '__main__':
     y = "2020.20"
     z = "2020.20dsdd"
     zz = "202020dsdd"
-    print(isint(x),isint(y), isint(z), isint(zz))
-    print(isfloat(x), isfloat(y), isfloat(z), isfloat(zz))
-    print(validateTypes([x, y, z, zz], [int, float, float]))
+    e1 = 'aaa@hotmail.com'
+    e2 = '@hotmail.com'
+    e3 = 'aaa@.com'
+    e4 = 'aa@aa.coodwofkejf'
+    print(isemail(e1),isemail(e2),isemail(e3),isemail(e4))
+    # print(isint(x),isint(y), isint(z), isint(zz))
+    # print(isfloat(x), isfloat(y), isfloat(z), isfloat(zz))
+    # print(validateTypes([x, y, z, zz], [int, float, float]))

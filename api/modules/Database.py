@@ -376,19 +376,28 @@ class Database(object):
 
     def cancelAuction(self, leilaoId, username):
         cursor = self.connection.cursor()
-        sqlAdmin = 'SELECT * FROM admin WHERE person_id = %s'
+        sqlActive = 'SELECT isactive FROM auction WHERE id = %s'
+        cursor.execute(sqlActive, (leilaoId,))
+        isActive = cursor.fetchone()[0]
+        if isActive == False:
+            return "inactive"
+        sqlAdmin = 'SELECT * FROM admin WHERE person_username = %s'
         cursor.execute(sqlAdmin, (username,))
         # O user não é administrador
         if cursor.rowcount < 1:
             cursor.close()
             return "notAdmin"
         # Check if auction exists
-        sqlCancel = 'SELECT * FROM auction WHERE id = %s'
-        cursor.execute(sqlCancel, (leilaoId,))
+        sqlVerifyAuction = 'SELECT * FROM auction WHERE id = %s'
+        cursor.execute(sqlVerifyAuction, (leilaoId,))
         # auction doesn't exists
         if cursor.rowcount < 1:
             cursor.close()
             return "noAuction"
+        sqlCancel = 'UPDATE auction SET isactive = false WHERE id = %s'
+        cursor.execute(sqlCancel, (leilaoId,))
+        cursor.close()
+        return {"leilaoId": leilaoId, "Estado": "Cancelado"}
 
 
 if __name__ == '__main__':

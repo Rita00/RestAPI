@@ -249,6 +249,21 @@ def ban(username,user):
 @decode_auth_token
 def cancelAuction(username, leilaoId):
     """Um administrador pode cancelar um leilão"""
+    try:
+        res = db.cancelAuction(leilaoId, username)
+        db.connection.commit()
+        if res == "notAdmin":
+            return jsonify({'erro': "Sem permissões de administrador!"})
+        elif res == "noAuction":
+            return jsonify({'erro': "O leilão não existe!"})
+        elif res == "inactive":
+            return jsonify({'erro': "O leilão já está cancelado!"})
+        else:
+            return jsonify(res)
+    except Exception as e:
+        db.connection.rollback()
+        print(e)
+        return jsonify({'erro': 401})
 
 
 @app.route('/')

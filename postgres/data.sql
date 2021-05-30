@@ -131,6 +131,7 @@ ALTER TABLE admin_participant
 --TRIGGERS=========================================
 
 --send Notification
+DROP PROCEDURE IF EXISTS  sendNotification CASCADE;
 CREATE OR REPLACE PROCEDURE sendNotification(p_dest participant.person_id%type, p_notif notification.message_message%type)
 LANGUAGE plpgsql
 AS $$
@@ -140,12 +141,9 @@ BEGIN
 END;
 $$;
 
---drop
-DROP FUNCTION IF EXISTS  participant_banned() CASCADE;
-DROP PROCEDURE IF EXISTS  public.finish_auctions() CASCADE;
-DROP function IF EXISTS  sendNotification CASCADE;
 
 --participant banned
+DROP FUNCTION IF EXISTS  participant_banned() CASCADE;
 CREATE OR REPLACE FUNCTION participant_banned()
 RETURNS TRIGGER
 LANGUAGE plpgsql
@@ -196,6 +194,7 @@ CREATE TRIGGER tai_ban
     FOR EACH ROW
     EXECUTE PROCEDURE participant_banned();
 
+DROP FUNCTION IF EXISTS  send_notification_cancel CASCADE;
 CREATE OR REPLACE FUNCTION send_notification_cancel() RETURNS TRIGGER
 LANGUAGE plpgsql
 AS $$
@@ -223,6 +222,7 @@ CREATE TRIGGER tau_cancel
 
 
 --finished auctions
+DROP PROCEDURE IF EXISTS  public.finish_auctions() CASCADE;
 CREATE OR REPLACE PROCEDURE public.finish_auctions()
     LANGUAGE plpgsql as
 $$
@@ -236,12 +236,21 @@ DECLARE
 BEGIN
     for r in c1
         loop
-            UPDATE auction SET isactive = false, winner = (SELECT person_username
-                          FROM bid,
-                               participant
-                          WHERE bid.participant_person_id = participant.person_id and auction_id = r.id
-                          ORDER BY price desc
-                          limit 1), maxbid = (SELECT max(price) FROM bid WHERE auction_id = r.id) WHERE id = r.id;
+            UPDATE auction
+            SET isactive = false,
+                winner = (
+                    SELECT person_username
+                    FROM bid,participant
+                    WHERE bid.participant_person_id = participant.person_id and auction_id = r.id
+                    ORDER BY price desc
+                    limit 1
+                    ),
+                maxbid = (
+                        SELECT max(price)
+                        FROM bid
+                        WHERE auction_id = r.id
+                    )
+            WHERE id = r.id;
         end loop;
 END;
 $$;

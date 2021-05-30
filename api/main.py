@@ -30,7 +30,7 @@ def generate_token(user_id):
         }
         return jwt.encode(
             payload,
-            b'\x13\xfc\xe2\x92\x0eE4\xd2\x92\xdd\xd4\x11np\xc8\x0c+<\xb1\xe8i\xf0\xc4O',
+            app.config.get('SECRET'),
             algorithm='HS256'
         )
     except Exception as e:
@@ -57,7 +57,7 @@ def verify_token(f):
         try:
             payload = jwt.decode(
                 authToken,
-                b'\x13\xfc\xe2\x92\x0eE4\xd2\x92\xdd\xd4\x11np\xc8\x0c+<\xb1\xe8i\xf0\xc4O',
+                app.config.get('SECRET'),
                 algorithms=['HS256']
             )
             username = payload['sub']
@@ -371,13 +371,20 @@ if __name__ == '__main__':
     BIDYOURAUCTION_HOST = os.environ.get('BIDYOURAUCTION_HOST')
     BIDYOURAUCTION_PORT = os.environ.get('BIDYOURAUCTION_PORT')
     BIDYOURAUCTION_DB = os.environ.get('BIDYOURAUCTION_DB')
+    
+    SECRET = os.environ.get('SECRET')
     '''
 
+    #TO REMOVE
     BIDYOURAUCTION_HOST = "ec2-34-254-69-72.eu-west-1.compute.amazonaws.com"
     BIDYOURAUCTION_PORT = "5432"
     BIDYOURAUCTION_DB = "das7ket3c5aarn"
     BIDYOURAUCTION_PASSWORD = "eb4ada6829ffce0e0f516062ea258ca6aa14d2fd85ea907ad910aa62eaf1412a"
     BIDYOURAUCTION_USER = "vtxuzrplfviiht"
+
+    SECRET = b'\x13\xfc\xe2\x92\x0eE4\xd2\x92\xdd\xd4\x11np\xc8\x0c+<\xb1\xe8i\xf0\xc4O'
+
+    app.config['SECRET'] = SECRET
 
     print(BIDYOURAUCTION_USER, BIDYOURAUCTION_PASSWORD, BIDYOURAUCTION_HOST, BIDYOURAUCTION_PORT, BIDYOURAUCTION_DB)
     db = database.Database(

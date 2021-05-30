@@ -129,6 +129,17 @@ ALTER TABLE admin_participant
     ADD CONSTRAINT admin_participant_fk2 FOREIGN KEY (participant_person_id) REFERENCES participant (person_id);
 
 --TRIGGERS=========================================
+
+--send Notification
+CREATE OR REPLACE PROCEDURE sendNotification(p_dest participant.person_id%type, p_notif notification.message_message%type) 
+LANGUAGE plpgsql
+AS $$ 
+BEGIN
+    INSERT INTO notification (participant_person_id, message_message, message_message_date)
+	VALUES (p_dest, p_notif, NOW());
+END;
+$$;
+
 --drop
 DROP TRIGGER IF EXISTS t_ban ON admin_participant;
 DROP FUNCTION IF EXISTS  participant_banned() CASCADE;

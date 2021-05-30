@@ -10,7 +10,7 @@ def isemail(string):
 
     :return: boolean
     """
-    regex = '^(\w|\.|\_|\-)+[@](\w|\_|\-|\.)+[.]\w{2,3}$'
+    regex = r"(^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$)"
     if re.search(regex, string):
         return True
     return False
@@ -110,11 +110,12 @@ if __name__ == '__main__':
     y = "2020.20"
     z = "2020.20dsdd"
     zz = "202020dsdd"
-    e1 = 'aaa@hotmail.com'
+    e1 = 'dylan@hotmail.com'
     e2 = '@hotmail.com'
     e3 = 'aaa@.com'
-    e4 = 'aa@aa.coodwofkejf'
-    print(isemail(e1),isemail(e2),isemail(e3),isemail(e4))
+    e4 = 'aa@aa.coodwofkejf.com'
+    e5 = '-@aa.com'
+    print(isemail(e1),isemail(e2),isemail(e3),isemail(e4),isemail(e5))
     # print(isint(x),isint(y), isint(z), isint(zz))
     # print(isfloat(x), isfloat(y), isfloat(z), isfloat(zz))
     # print(validateTypes([x, y, z, zz], [int, float, float]))

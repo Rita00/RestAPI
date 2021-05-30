@@ -40,8 +40,8 @@ def validateTypes(content, types):
 
     :return: boolean
     """
-    if len(content) != len(types):
-        return "content and types does not have the same length!"
+    assert len(content) == len(types), "'content' list and 'types' list does not have the same length!"
+
     if type(content) is dict:
         content = list(content.values())
     for i in range(len(content)):
@@ -97,4 +97,4 @@ if __name__ == '__main__':
     zz = "202020dsdd"
     print(isint(x),isint(y), isint(z), isint(zz))
     print(isfloat(x), isfloat(y), isfloat(z), isfloat(zz))
-    print(validateTypes([x, y, z, zz], [int, float, float, int]))
+    print(validateTypes([x, y, z, zz], [int, float, float]))

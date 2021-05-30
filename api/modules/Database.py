@@ -149,6 +149,12 @@ class Database(object):
         :return: id da licitacao
         """
         cursor = self.connection.cursor()
+        # Verificar se o leilão está ativo
+        sqlAuction = 'SELECT isactive FROM auction WHERE id = %s'
+        cursor.execute(sqlAuction, (auction_id,))
+        isActive = cursor.fetchone()[0]
+        if isActive == False:
+            return 'inactive'
         # buscar id do participante
         cursor.execute("""
                         SELECT person_id
@@ -383,6 +389,7 @@ class Database(object):
         if cursor.rowcount < 1:
             cursor.close()
             return "noAuction"
+
 
 if __name__ == '__main__':
     # testar codigo desta classe aqui

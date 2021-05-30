@@ -172,6 +172,8 @@ def bid(username, leilaoId, licictacao):
     """Listar os leilões em que o utilizador tenha uma atividade"""
     try:
         bid_id = db.bid(username, leilaoId, licictacao)
+        if bid_id == 'inactive':
+            return jsonify({'erro': 'O leilão está inativo'})
     except Exception as e:
         print(e)
         return jsonify({'erro': 401})

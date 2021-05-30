@@ -111,26 +111,15 @@ class Database(object):
         :return: leilões
         """
         cursor = self.connection.cursor()
-        cursor.execute("""
-                        SELECT t.auction_id, t.description
-                        FROM textual_description t
-                        WHERE (t.auction_id,t.version) IN (
-                            SELECT DISTINCT a.id, MAX(t.version)
-                            FROM auction a,
-                                 textual_description t
-                            WHERE a.id = t.auction_id
-                            GROUP BY a.id
-                            HAVING a.id IN (
-                                SELECT b.auction_id
-                                FROM bid b
-                                WHERE b.participant_person_id IN (
-                                    SELECT p.person_id
-                                    FROM participant p
-                                    WHERE p.person_username LIKE %s
-                                )
-                            )
-                        );
-                        """, (username,))
+        getPersonId = 'SELECT person_id FROM participant WHERE person_username = %s'
+        cursor.execute(getPersonId, (username,))
+        persoId = cursor.fetchone()[0]
+        cursor.execute(
+            """SELECT distinct on (auction.id) auction.id, description, version 
+            FROM auction, bid, textual_description 
+            WHERE auction.id = bid.auction_id and auction.id = textual_description.auction_id and (bid.participant_person_id = %s or auction.participant_person_id = %s) 
+            ORDER BY auction.id, version desc""",
+            (persoId, persoId))
         if cursor.rowcount < 1:
             res = []
         else:
@@ -149,6 +138,12 @@ class Database(object):
         :return: id da licitacao
         """
         cursor = self.connection.cursor()
+        # Verificar se o leilão está ativo
+        sqlAuction = 'SELECT isactive FROM auction WHERE id = %s'
+        cursor.execute(sqlAuction, (auction_id,))
+        isActive = cursor.fetchone()[0]
+        if isActive == False:
+            return 'inactive'
         # buscar id do participante
         cursor.execute("""
                         SELECT person_id
@@ -213,15 +208,37 @@ class Database(object):
         return message_id
 
     def signIn(self, username, password):
+        """
+                Efetuar login na aplicação
+
+                :param username: nome de utilizador
+                :param password: password do utilizador
+
+                :return: true caso o user exista na base de dados, false caso contrário e banned caso o utilizador esteja banido
+                """
         cursor = self.connection.cursor()
         # Exemplo de sql injection
         # password1 = '\' union select * from participant WHERE \'1\'= \'1'
-        sql = 'SELECT * FROM participant WHERE person_username = %s AND person_password = %s'
+
+        sql = """   
+                SELECT * 
+                FROM participant
+                WHERE (person_username = %s AND person_password = %s) 
+            """
         cursor.execute(sql, (username, password))
         if cursor.rowcount < 1:
+            sql = """   
+                    SELECT * 
+                    FROM admin
+                    WHERE (person_username = %s AND person_password = %s) 
+                """
+            cursor.execute(sql, (username, password))
+            if cursor.rowcount < 1:
+                cursor.close()
+                return False
+                # return 'AuthError'
             cursor.close()
-            return False
-            # return 'AuthError'
+            return True
 
         isBanned = 'SELECT isbanned FROM participant WHERE person_username = %s'
         cursor.execute(isBanned, (username,))
@@ -229,7 +246,6 @@ class Database(object):
         if isBanned:
             cursor.close()
             return 'banned'
-
         cursor.close()
         return True
 
@@ -246,7 +262,7 @@ class Database(object):
 
     def listAuctions(self, param):
         cursor = self.connection.cursor()
-        sql = 'SELECT id, description FROM auction, textual_description WHERE auction.id = textual_description.auction_id AND (auction.code::text = %s OR textual_description.description like %s)'
+        sql = 'SELECT id, description FROM auction, textual_description WHERE auction.id = textual_description.auction_id AND (auction.code::text = %s OR textual_description.description like %s) AND isactive = true'
         cursor.execute(sql, (param, '%' + param + '%'))
         if cursor.rowcount < 1:
             res = []
@@ -296,12 +312,81 @@ class Database(object):
         self.connection.commit()
 
         # Get complete information about auction
-        auctionInfo = 'SELECT id, code, min_price, begin_date, end_date, person_username, title, description FROM auction, participant, textual_description WHERE auction.participant_person_id = participant.person_id AND auction.id = textual_description.auction_id AND auction.id = %s AND textual_description.version = %s'
+        auctionInfo = 'SELECT id, code, min_price, begin_date, end_date, isactive, person_username, title, description FROM auction, participant, textual_description WHERE auction.participant_person_id = participant.person_id AND auction.id = textual_description.auction_id AND auction.id = %s AND textual_description.version = %s'
         cursor.execute(auctionInfo, (auction_id, lastVersion))
         row = cursor.fetchone()
         cursor.close()
-        res = {"leilãoId": row[0], "codigo": row[1], "precoMin": row[2], "DataIni": row[3], "DataFim": row[4], "Criador": row[5], "Titulo": row[6], "Descricao": row[7]}
+        res = {"leilãoId": row[0], "codigo": row[1], "precoMin": row[2], "DataIni": row[3], "DataFim": row[4],
+               "Ativo": row[5], "Criador": row[6], "Titulo": row[7], "Descricao": row[8]}
         return res
+
+    def finishAuctions(self):
+        # calls a procedure for efficiency
+        cursor = self.connection.cursor()
+        cursor.execute("CALL finish_auctions();")
+        cursor.close()
+        return True
+
+    def ban(self, admin, user):
+        """
+        Banir utilizador definitivamente por um admin.\n
+        A adição de dados na tabela admin_participant vai ativar um trigger
+        que encarrega-se de atualizar os dados todas das restantes tabelas devidas ao
+        baniamento do utilizador.
+
+        :param admin: administrador
+        :param user: utilizador banido
+
+        :return: id do administrador e do utilizador que foi banido por ele
+        """
+        cursor = self.connection.cursor()
+        # buscar id do admin
+        cursor.execute("""
+                        SELECT person_id
+                        FROM admin
+                        WHERE person_username=%s;
+                        """, (admin,))
+        admin_id = cursor.fetchone()[0]
+        # buscar id do participante
+        cursor.execute("""
+                        SELECT person_id
+                        FROM participant
+                        WHERE person_username=%s;
+                        """, (user,))
+        user_id = cursor.fetchone()[0]
+        # registar a mensagem
+        cursor.execute("""
+                        INSERT INTO admin_participant
+                        VALUES(%s,%s);
+                        """, (admin_id, user_id))
+        cursor.close()
+        self.connection.commit()
+        return admin_id, user_id
+
+    def cancelAuction(self, leilaoId, username):
+        cursor = self.connection.cursor()
+        sqlActive = 'SELECT isactive FROM auction WHERE id = %s'
+        cursor.execute(sqlActive, (leilaoId,))
+        isActive = cursor.fetchone()[0]
+        if isActive == False:
+            return "inactive"
+        sqlAdmin = 'SELECT * FROM admin WHERE person_username = %s'
+        cursor.execute(sqlAdmin, (username,))
+        # O user não é administrador
+        if cursor.rowcount < 1:
+            cursor.close()
+            return "notAdmin"
+        # Check if auction exists
+        sqlVerifyAuction = 'SELECT * FROM auction WHERE id = %s'
+        cursor.execute(sqlVerifyAuction, (leilaoId,))
+        # auction doesn't exists
+        if cursor.rowcount < 1:
+            cursor.close()
+            return "noAuction"
+        sqlCancel = 'UPDATE auction SET isactive = false WHERE id = %s'
+        cursor.execute(sqlCancel, (leilaoId,))
+        cursor.close()
+        return {"leilaoId": leilaoId, "Estado": "Cancelado"}
 
 
 if __name__ == '__main__':

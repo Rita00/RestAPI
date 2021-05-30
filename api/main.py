@@ -9,6 +9,7 @@ import os
 import random
 # custom modules
 import modules.Database as database
+import modules.Utils as utils
 
 # config
 global db
@@ -81,6 +82,9 @@ def signUp():
     id = None
     try:
         content = request.json
+        valid = utils.validateTypes(content, [str, str, str])
+        if not valid:
+            return jsonify({'erro': 404})
         id = db.signUp(content['username'], content['email'], content['password'])
     except Exception as e:
         db.connection.rollback()
@@ -95,6 +99,9 @@ def signIn():
     """Login do utilizador"""
     try:
         content = request.json
+        valid = utils.validateTypes(content, [str, str])
+        if not valid:
+            return jsonify({'erro': 404})
         correctSignIn = db.signIn(content['username'], content['password'])
         if correctSignIn == True:
             token = encode_auth_token(content['username'])
@@ -119,6 +126,11 @@ def createAuction(username):
     id = None
     try:
         content = request.json
+        valid = utils.validateTypes([username], [str])
+        valid = valid & utils.validateTypes(content, [int, float, str, str, str, str])
+        valid = valid & utils.validateDates([content['dataInicio'], content['dataFim']])
+        if not valid:
+            return jsonify({'erro': 404})
         id = db.createAuction(username, content['artigoId'], content['precoMinimo'], content['dataInicio'],
                               content['dataFim'], content['titulo'], content['descricao'])
     except Exception as e:
@@ -130,7 +142,8 @@ def createAuction(username):
 
 
 @app.route('/dbproj/leiloes', methods=['GET'])
-def listAllAuctions():
+@decode_auth_token
+def listAllAuctions(username):
     """Listar Todos os leilões existentes"""
     try:
         auctions = db.listAllAuctions()
@@ -141,9 +154,13 @@ def listAllAuctions():
 
 
 @app.route('/dbproj/leiloes/<keyword>', methods=['GET'])
-def listCurrentAuctions(keyword):
+@decode_auth_token
+def listCurrentAuctionsByKeyword(username, keyword):
     """Listar os leilões que estão a decorrer"""
     try:
+        valid = utils.validateTypes([keyword], [str])
+        if not valid:
+            return jsonify({'erro': 404})
         auctions = db.listAuctions(keyword)
     except Exception as e:
         print(e)
@@ -156,6 +173,9 @@ def listCurrentAuctions(keyword):
 def listUserAuctions(username):
     """Listar os leilões em que o utilizador tenha uma atividade"""
     try:
+        valid = utils.validateTypes([username], [str])
+        if not valid:
+            return jsonify({'erro': 404})
         auctions = db.listUserAuctions(username)
     except Exception as e:
         db.connection.rollback()
@@ -169,7 +189,12 @@ def listUserAuctions(username):
 def bid(username, leilaoId, licictacao):
     """Listar os leilões em que o utilizador tenha uma atividade"""
     try:
+        valid = utils.validateTypes([username, leilaoId, licictacao], [str, int, float])
+        if not valid:
+            return jsonify({'erro': 404})
         bid_id = db.bid(username, leilaoId, licictacao)
+        if bid_id == 'inactive':
+            return jsonify({'erro': 'O leilão está inativo'})
     except Exception as e:
         print(e)
         return jsonify({'erro': 401})
@@ -177,9 +202,13 @@ def bid(username, leilaoId, licictacao):
 
 
 @app.route('/dbproj/leilao/<leilaoId>', methods=['GET'])
-def detailsAuction(leilaoId):
+@decode_auth_token
+def detailsAuction(username, leilaoId):
     """Consultar os detalhes de um determinado leilão"""
     try:
+        valid = utils.validateTypes([leilaoId], [int])
+        if not valid:
+            return jsonify({'erro': 404})
         details = db.detailsAuction(leilaoId)
     except Exception as e:
         print(e)
@@ -194,6 +223,10 @@ def writeFeedMessage(username, leilaoId):
     try:
         content = request.json
         print(content)
+        valid = utils.validateTypes([username, leilaoId], [str, int])
+        valid = valid & utils.validateTypes(content, [str, str])
+        if not valid:
+            return jsonify({'erro': 404})
         message_id = db.writeFeedMessage(username, leilaoId, content["message"], content["type"])
     except Exception as e:
         print(e)
@@ -201,20 +234,75 @@ def writeFeedMessage(username, leilaoId):
     return jsonify({'messageId': message_id})
 
 
-@app.route('/dbproj/leilao/<leilaoId>', methods=['PUT'])
+@app.route('/dbproj/leilao/edit/<leilaoId>', methods=['PUT'])
 @decode_auth_token
 def editAuction(username, leilaoId):
     """Editar propriedades de um leilão"""
     try:
         content = request.json
+        valid = utils.validateTypes([username, leilaoId], [str, int])
+        valid = valid & utils.validateTypes(content, [str, str])
+        if not valid:
+            return jsonify({'erro': 404})
         res = db.editAuction(leilaoId, content["titulo"], content["descricao"], username)
         if res == "notCreator":
             return jsonify({'erro': "User is not the auction's creator"})
         # Error on insert
-        elif res == False:
+        elif not res:
             return jsonify({'erro': 401})
         return jsonify(res)
     except Exception as e:
+        print(e)
+        return jsonify({'erro': 401})
+
+
+@app.route('/dbproj/leilao/checkFinish', methods=['PUT'])
+@decode_auth_token
+def finishAuction(username):
+    """Terminar leilão na data, hora e minuto marcados"""
+    try:
+        db.finishAuctions()
+    except Exception as e:
+        print(e)
+        return jsonify({'erro': 401})
+
+
+@app.route('/dbproj/ban/<user>', methods=['PUT'])
+@decode_auth_token
+def ban(username, user):
+    """Banir um utilizador definitivamente"""
+    try:
+        valid = utils.validateTypes([username, user], [str, str])
+        if not valid:
+            return jsonify({'erro': 404})
+        admin_id, user_id = db.ban(username, user)
+    except Exception as e:
+        db.connection.rollback()
+        print(e)
+        return jsonify({'erro': 401})
+    return jsonify({'adminId': admin_id, 'userId': user_id})
+
+
+@app.route('/dbproj/leilao/cancel/<leilaoId>', methods=['PUT'])
+@decode_auth_token
+def cancelAuction(username, leilaoId):
+    """Um administrador pode cancelar um leilão"""
+    try:
+        valid = utils.validateTypes([username, leilaoId], [str, int])
+        if not valid:
+            return jsonify({'erro': 404})
+        res = db.cancelAuction(leilaoId, username)
+        db.connection.commit()
+        if res == "notAdmin":
+            return jsonify({'erro': "Sem permissões de administrador!"})
+        elif res == "noAuction":
+            return jsonify({'erro': "O leilão não existe!"})
+        elif res == "inactive":
+            return jsonify({'erro': "O leilão já está cancelado!"})
+        else:
+            return jsonify(res)
+    except Exception as e:
+        db.connection.rollback()
         print(e)
         return jsonify({'erro': 401})
 

@@ -1,6 +1,6 @@
 -- SignUp
-INSERT INTO participant (person_username,person_email,person_password,person_token)
-VALUES ('dylan','dylan@email.com','12345','qwertzuiopasdfghjklyxcvbnm');
+INSERT INTO participant (person_id, person_username,person_email,person_password)
+VALUES (17, 'teste','teste@email.com','12345');
 
 --- Simular Leilões
 SELECT * FROM auction;
@@ -97,3 +97,54 @@ SELECT * FROM auction JOIN participant on auction.participant_person_id = partic
 
 INSERT INTO textual_description(version, title, description, alteration_date, auction_id) VALUES(2, 'ola', 'olaaa', now(), 1);
 SELECT id, code, min_price, begin_date, end_date, person_username, title, description FROM auction, participant, textual_description WHERE auction.participant_person_id = participant.person_id AND auction.id = textual_description.auction_id AND auction.id = 1;
+
+UPDATE auction SET isactive = false WHERE end_date < now();
+
+SELECT person_username FROM bid, participant WHERE bid.participant_person_id = participant.person_id AND auction_id = 1 ORDER BY price desc limit 1;
+
+SELECT 'now()';
+
+call finish_auctions();
+SELECT *
+        FROM auction
+        WHERE isactive = True AND end_date < now();
+
+UPDATE auction SET isactive = false WHERE id = 3;
+
+rollback;
+
+select * from auction;
+select relation::regclass, * from pg_locks where not granted;
+vacuum analyse;
+SELECT person_username FROM bid, participant
+                          WHERE bid.participant_person_id = participant.person_id and auction_id = 1
+                          ORDER BY price desc
+                          limit 1;
+
+SELECT id, description FROM auction, textual_description WHERE auction.id = textual_description.auction_id AND (auction.code::text = 'pesquisa' OR textual_description.description like '%pesquisa%') AND isactive = true
+
+SELECT t.auction_id, t.description
+FROM textual_description t
+WHERE (t.auction_id,t.version)
+        IN (SELECT DISTINCT a.id, MAX(t.version)
+        FROM auction a, textual_description t
+        WHERE a.id = t.auction_id
+        GROUP BY a.id
+        HAVING a.id IN (
+        SELECT b.auction_id
+        FROM bid b
+        WHERE b.participant_person_id IN (
+        SELECT p.person_id
+        FROM participant p
+        WHERE p.person_username LIKE 'dylan'
+                                )
+                            )
+                        )
+
+SELECT distinct on (auction.id) auction.id, description, version
+FROM auction, bid, textual_description
+WHERE auction.id = bid.auction_id and auction.id = textual_description.auction_id and (bid.participant_person_id = 15 or auction.participant_person_id = 15)
+ORDER BY auction.id, version desc;
+
+select * from bid;
+select * from textual_description;

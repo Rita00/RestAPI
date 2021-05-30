@@ -116,3 +116,5 @@ dmypy.json
 # others
 .DS_Store
 *.idea
+.idea/misc.xml
+.idea/BD2021.iml

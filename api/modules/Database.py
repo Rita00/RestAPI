@@ -312,6 +312,31 @@ class Database(object):
                "Ativo": row[5], "Criador": row[6], "Titulo": row[7], "Descricao": row[8]}
         return res
 
+    def listNotifications(self, username):
+        """
+        Lista as notificações da mais recente para a mais antiga
+
+        :param username: nome de utilizador
+
+        :return: notificações
+        """
+        cursor = self.connection.cursor()
+        getPersonId = 'SELECT person_id FROM participant WHERE person_username = %s'
+        cursor.execute(getPersonId, (username,))
+        personId = cursor.fetchone()[0]
+        cursor.execute(
+            """SELECT message_message, message_message_date
+            FROM notification 
+            WHERE participant_person_id = %s
+            ORDER BY message_message_date DESC""",
+            (personId,))
+        if cursor.rowcount < 1:
+            res = []
+        else:
+            res = [{"mensagem": row[0], "datatime": row[1]} for row in cursor.fetchall()]
+        cursor.close()
+        return res
+
     def finishAuctions(self):
         # calls a procedure for efficiency
         cursor = self.connection.cursor()

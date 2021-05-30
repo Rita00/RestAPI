@@ -256,17 +256,34 @@ def editAuction(username, leilaoId):
         print(e)
         return jsonify({'erro': 401})
 
-
-@app.route('/dbproj/leilao/checkFinish', methods=['PUT'])
+@app.route('/dbproj/inbox', methods=['GET'])
 @verify_token
-def finishAuction(username):
-    """Terminar leilão na data, hora e minuto marcados"""
+def getNotifications(username):
+    """Listar todas as notificações da mais recente para a mais antiga"""
     try:
-        db.finishAuctions()
+        valid = utils.validateTypes([username], [str])
+        if not valid:
+            return jsonify({'erro': 404})
+        notifications = db.listNotifications(username)
+        return jsonify(notifications)
     except Exception as e:
+        db.connection.rollback()
         print(e)
         return jsonify({'erro': 401})
 
+@app.route('/dbproj/leilao/checkFinish', methods=['PUT'])
+def finishAuction():
+    """Terminar leilão na data, hora e minuto marcados"""
+    try:
+        db.finishAuctions()
+        return jsonify({'status': 'success'})
+    except Exception as e:
+        db.connection.rollback()
+        print(e)
+        return jsonify({'erro': 401})
+
+
+########## ADMIN ##########
 
 @app.route('/dbproj/ban/<user>', methods=['PUT'])
 @verify_token

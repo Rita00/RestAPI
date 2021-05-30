@@ -155,3 +155,7 @@ Select p.person_username,count(*) From bid b, participant p where b.participant_
 Select winner,count(*) From auction where winner IS NOT NULL group by winner order by count(*) desc limit 10;
 
 select count(*) from auction where begin_date > current_date - interval '10' day;
+
+SELECT id
+FROM auction
+WHERE code= 111111111 ORDER BY begin_date desc

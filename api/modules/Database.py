@@ -53,14 +53,13 @@ class Database(object):
         self.connection.commit()
         return res
 
-    def createAuction(self, username, article_id, min_price, begin_date, end_date, title, description):
+    def createAuction(self, username, article_id, min_price, end_date, title, description):
         """
         Insere um leilão na base de dados
 
         :param username: nome de utilizador
         :param article_id: id do artigo
         :param min_price: preco minimo
-        :param begin_date: data de inicio
         :param end_date: data de fim
         :param title: titulo
         :param description: descricao
@@ -83,21 +82,14 @@ class Database(object):
         cursor.execute("""
                         SELECT id
                         FROM auction
-                        WHERE code= %s;
+                        WHERE code= %s ORDER BY begin_date desc;
                         """, (article_id,))
         id = cursor.fetchone()[0]
-        # conta as versoes existentes
-        cursor.execute("""
-                        SELECT count(*)
-                        FROM textual_description
-                        WHERE auction_id=%s;
-                        """, (id,))
-        version = 1 + cursor.fetchone()[0]
         # insere os dados textuais do leilão
         cursor.execute("""
                         INSERT INTO textual_description(version, title, description, alteration_date, auction_id)
                         VALUES (%s,%s,%s, NOW(),%s);
-                        """, (version, title, description, id))
+                        """, (1, title, description, id))
         cursor.close()
         self.connection.commit()
         return id
@@ -318,6 +310,31 @@ class Database(object):
         cursor.close()
         res = {"leilãoId": row[0], "codigo": row[1], "precoMin": row[2], "DataIni": row[3], "DataFim": row[4],
                "Ativo": row[5], "Criador": row[6], "Titulo": row[7], "Descricao": row[8]}
+        return res
+
+    def listNotifications(self, username):
+        """
+        Lista as notificações da mais recente para a mais antiga
+
+        :param username: nome de utilizador
+
+        :return: notificações
+        """
+        cursor = self.connection.cursor()
+        getPersonId = 'SELECT person_id FROM participant WHERE person_username = %s'
+        cursor.execute(getPersonId, (username,))
+        personId = cursor.fetchone()[0]
+        cursor.execute(
+            """SELECT message_message, message_message_date
+            FROM notification 
+            WHERE participant_person_id = %s
+            ORDER BY message_message_date DESC""",
+            (personId,))
+        if cursor.rowcount < 1:
+            res = []
+        else:
+            res = [{"mensagem": row[0], "data": row[1]} for row in cursor.fetchall()]
+        cursor.close()
         return res
 
     def finishAuctions(self):

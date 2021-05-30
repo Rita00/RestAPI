@@ -149,6 +149,13 @@ ORDER BY auction.id, version desc;
 select * from bid;
 select * from textual_description;
 
+
+Select p.person_username,count(*) From bid b, participant p where b.participant_person_id=p.person_id group by p.person_username order by count(*) desc limit 10;
+
+Select winner,count(*) From auction where winner IS NOT NULL group by winner order by count(*) desc limit 10;
+
+select count(*) from auction where begin_date > current_date - interval '10' day;
+
 SELECT id
 FROM auction
 WHERE code= 111111111 ORDER BY begin_date desc

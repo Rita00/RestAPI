@@ -312,6 +312,31 @@ class Database(object):
                "Ativo": row[5], "Criador": row[6], "Titulo": row[7], "Descricao": row[8]}
         return res
 
+    def listNotifications(self, username):
+        """
+        Lista as notificações da mais recente para a mais antiga
+
+        :param username: nome de utilizador
+
+        :return: notificações
+        """
+        cursor = self.connection.cursor()
+        getPersonId = 'SELECT person_id FROM participant WHERE person_username = %s'
+        cursor.execute(getPersonId, (username,))
+        personId = cursor.fetchone()[0]
+        cursor.execute(
+            """SELECT message_message, message_message_date
+            FROM notification 
+            WHERE participant_person_id = %s
+            ORDER BY message_message_date DESC""",
+            (personId,))
+        if cursor.rowcount < 1:
+            res = []
+        else:
+            res = [{"mensagem": row[0], "data": row[1]} for row in cursor.fetchall()]
+        cursor.close()
+        return res
+
     def finishAuctions(self):
         # calls a procedure for efficiency
         cursor = self.connection.cursor()
@@ -379,6 +404,55 @@ class Database(object):
         cursor.execute(sqlCancel, (leilaoId,))
         cursor.close()
         return {"leilaoId": leilaoId, "Estado": "Cancelado"}
+
+    def stats(self, username):
+        """
+        Consultar estatisticas da applicação: \n
+        - TOP10 utilizadores com mais leilões criados \n
+        - TOP10 utilizadores que mais leilões venceram |n
+        - número total de leilões nos últimos 10 dias
+
+        :param username: username do administrador
+
+        :return: queries
+        """
+        cursor = self.connection.cursor()
+        res1 = res2 = res3 = list()
+        # verificar se é admin
+        cursor.execute("""
+                        SELECT person_id
+                        FROM admin
+                        WHERE person_username=%s;
+                        """, (username,))
+        # TOP 10user com leiloes criados
+        cursor.execute("""
+            SELECT p.person_username,count(*) 
+            FROM bid b, participant p 
+            WHERE b.participant_person_id=p.person_id 
+            GROUP BY p.person_username
+            ORDER BY count(*) desc 
+            LIMIT 10;
+        """)
+        if cursor.rowcount > 0:
+            res1 = [{"username": row[0], "leiloesCriados": row[1]} for row in cursor.fetchall()]
+        # TOP 10user com mais leiloes vencidos
+        cursor.execute("""
+            SELECT winner,count(*) 
+            FROM auction 
+            WHERE winner IS NOT NULL
+            GROUP BY winner order by count(*) desc limit 10;
+        """)
+        if cursor.rowcount > 0:
+            res2 = [{"username": row[0], "leiloesVencidos": row[1]} for row in cursor.fetchall()]
+        # número total de leilões nos últimos 10 dias
+        cursor.execute("""
+            SELECT count(*) 
+            FROM auction
+            WHERE begin_date > current_date - interval '10' day;
+        """)
+        if cursor.rowcount > 0:
+            res3 = cursor.fetchone()[0]
+        return res1, res2, res3
 
 
 if __name__ == '__main__':

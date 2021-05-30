@@ -16,7 +16,7 @@ global db
 app = Flask(__name__)
 
 
-def encode_auth_token(user_id):
+def generate_token(user_id):
     """
     Generates the Auth Token
 
@@ -37,7 +37,7 @@ def encode_auth_token(user_id):
         return e
 
 
-def decode_auth_token(f):
+def verify_token(f):
     """
     Decodes the auth token
 
@@ -105,7 +105,7 @@ def signIn():
             return jsonify({'erro': 404})
         correctSignIn = db.signIn(content['username'], content['password'])
         if correctSignIn == True:
-            token = encode_auth_token(content['username'])
+            token = generate_token(content['username'])
 
             return jsonify({'authToken': token})
 
@@ -121,7 +121,7 @@ def signIn():
 
 
 @app.route('/dbproj/leilao', methods=['POST'])
-@decode_auth_token
+@verify_token
 def createAuction(username):
     """Criar Leilão"""
     id = None
@@ -143,7 +143,7 @@ def createAuction(username):
 
 
 @app.route('/dbproj/leiloes', methods=['GET'])
-@decode_auth_token
+@verify_token
 def listAllAuctions(username):
     """Listar Todos os leilões existentes"""
     try:
@@ -155,7 +155,7 @@ def listAllAuctions(username):
 
 
 @app.route('/dbproj/leiloes/<keyword>', methods=['GET'])
-@decode_auth_token
+@verify_token
 def listCurrentAuctionsByKeyword(username, keyword):
     """Listar os leilões que estão a decorrer"""
     try:
@@ -170,7 +170,7 @@ def listCurrentAuctionsByKeyword(username, keyword):
 
 
 @app.route(f'/dbproj/user/leiloes', methods=['GET'])
-@decode_auth_token
+@verify_token
 def listUserAuctions(username):
     """Listar os leilões em que o utilizador tenha uma atividade"""
     try:
@@ -186,7 +186,7 @@ def listUserAuctions(username):
 
 
 @app.route(f'/dbproj/licitar/<leilaoId>/<licictacao>', methods=['POST'])  # TODO leilaoId
-@decode_auth_token
+@verify_token
 def bid(username, leilaoId, licictacao):
     """Listar os leilões em que o utilizador tenha uma atividade"""
     try:
@@ -203,7 +203,7 @@ def bid(username, leilaoId, licictacao):
 
 
 @app.route('/dbproj/leilao/<leilaoId>', methods=['GET'])
-@decode_auth_token
+@verify_token
 def detailsAuction(username, leilaoId):
     """Consultar os detalhes de um determinado leilão"""
     try:
@@ -218,7 +218,7 @@ def detailsAuction(username, leilaoId):
 
 
 @app.route('/dbproj/feed/<leilaoId>', methods=['POST'])
-@decode_auth_token
+@verify_token
 def writeFeedMessage(username, leilaoId):
     """Escrever mensagem no mural de um leilão"""
     try:
@@ -236,7 +236,7 @@ def writeFeedMessage(username, leilaoId):
 
 
 @app.route('/dbproj/leilao/edit/<leilaoId>', methods=['PUT'])
-@decode_auth_token
+@verify_token
 def editAuction(username, leilaoId):
     """Editar propriedades de um leilão"""
     try:
@@ -257,21 +257,37 @@ def editAuction(username, leilaoId):
         print(e)
         return jsonify({'erro': 401})
 
+@app.route('/dbproj/inbox', methods=['GET'])
+@verify_token
+def getNotifications(username):
+    """Listar todas as notificações da mais recente para a mais antiga"""
+    try:
+        valid = utils.validateTypes([username], [str])
+        if not valid:
+            return jsonify({'erro': 404})
+        notifications = db.listNotifications(username)
+        return jsonify(notifications)
+    except Exception as e:
+        db.connection.rollback()
+        print(e)
+        return jsonify({'erro': 401})
 
 @app.route('/dbproj/leilao/checkFinish', methods=['PUT'])
-@decode_auth_token
-def finishAuction(username):
+def finishAuction():
     """Terminar leilão na data, hora e minuto marcados"""
     try:
         db.finishAuctions()
+        return jsonify({'status': 'success'})
     except Exception as e:
         db.connection.rollback()
         print(e)
         return jsonify({'erro': 401})
 
 
+########## ADMIN ##########
+
 @app.route('/dbproj/ban/<user>', methods=['PUT'])
-@decode_auth_token
+@verify_token
 def ban(username, user):
     """Banir um utilizador definitivamente"""
     try:
@@ -287,7 +303,7 @@ def ban(username, user):
 
 
 @app.route('/dbproj/leilao/cancel/<leilaoId>', methods=['PUT'])
-@decode_auth_token
+@verify_token
 def cancelAuction(username, leilaoId):
     """Um administrador pode cancelar um leilão"""
     try:
@@ -310,10 +326,40 @@ def cancelAuction(username, leilaoId):
         return jsonify({'erro': 401})
 
 
-@app.route('/')
-@app.route('/home')
+@app.route('/dbproj/stats', methods=['GET'])
+@decode_auth_token
+def stats(username):
+    """
+    Consultar estatisticas da applicação: \n
+    - TOP10 utilizadores com mais leilões criados \n
+    - TOP10 utilizadores que mais leilões venceram |n
+    - número total de leilões nos últimos 10 dias
+
+    :param username: username do administrador
+
+    :return: resposta
+    """
+    try:
+        valid = utils.validateTypes([username], [str])
+        if not valid:
+            return jsonify({'erro': 404})
+        res = db.stats(username)
+        db.connection.commit()
+        return jsonify({'topCriadores': res[0], 'topVencedores': res[1], 'numeroDeLeiloesNosUltimosDezDias': res[2]})
+    except Exception as e:
+        db.connection.rollback()
+        print(e)
+        return jsonify({'erro': 401})
+
+
+@app.route('/*')
 def home():
-    return "<h1><center>BidYourAuction<center></h1>"
+    """
+    Devolve page not found error
+
+    :return: codigo de erro
+    """
+    return jsonify({'erro': 404})
 
 
 if __name__ == '__main__':

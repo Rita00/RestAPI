@@ -132,6 +132,7 @@ ALTER TABLE admin_participant
 --drop
 DROP TRIGGER IF EXISTS t_ban ON admin_participant;
 DROP FUNCTION IF EXISTS  participant_banned() CASCADE;
+DROP PROCEDURE IF EXISTS  public.finish_auctions() CASCADE;
 
 --participant banned
 CREATE OR REPLACE FUNCTION participant_banned()

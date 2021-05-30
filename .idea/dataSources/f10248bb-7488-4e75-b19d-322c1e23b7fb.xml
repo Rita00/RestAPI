@@ -6539,7 +6539,7 @@ true posixrules
     <database id="1284" parent="1" name="das7ket3c5aarn">
       <ObjectId>12185636</ObjectId>
       <Owner>vtxuzrplfviiht</Owner>
-      <IntrospectionStateNumber>54231027</IntrospectionStateNumber>
+      <IntrospectionStateNumber>54248568</IntrospectionStateNumber>
       <Current>1</Current>
       <Relations>sequence|table|13067439|13067441|2
 sequence|table|13132429|13132431|1
@@ -18312,7 +18312,6 @@ sequence|table|13047555|13047557|2
     <role id="3822" parent="1" name="xmywvkklosxyoq">
       <ObjectId>12991749</ObjectId>
       <ConnectionLimit>20</ConnectionLimit>
-      <CanLogin>1</CanLogin>
     </role>
     <role id="3823" parent="1" name="xmzbxboknlqhjt">
       <ObjectId>1657152</ObjectId>
@@ -19257,7 +19256,7 @@ UC/12185635
 </Acl>
       <StateNumber>51439847</StateNumber>
       <Owner>vtxuzrplfviiht</Owner>
-      <IntrospectionStateNumber>54231033</IntrospectionStateNumber>
+      <IntrospectionStateNumber>54248574</IntrospectionStateNumber>
       <Current>1</Current>
     </schema>
     <extension id="4013" parent="1284" name="plpgsql">
@@ -19443,10 +19442,10 @@ UC/12185635
       <StateNumber>53697926</StateNumber>
     </table>
     <routine id="4040" parent="4012" name="finish_auctions">
-      <ObjectId>13132402</ObjectId>
+      <ObjectId>13139507</ObjectId>
       <Owner>vtxuzrplfviiht</Owner>
-      <SourceTextLength>626</SourceTextLength>
-      <StateNumber>54179284</StateNumber>
+      <SourceTextLength>625</SourceTextLength>
+      <StateNumber>54248555</StateNumber>
       <LanguageName>plpgsql</LanguageName>
       <RoutineKind>procedure</RoutineKind>
       <Rows>0.0</Rows>

@@ -248,7 +248,7 @@ def editAuction(username, leilaoId):
         if res == "notCreator":
             return jsonify({'erro': "User is not the auction's creator"})
         # Error on insert
-        elif res == False:
+        elif not res:
             return jsonify({'erro': 401})
         return jsonify(res)
     except Exception as e:
@@ -277,6 +277,7 @@ def ban(username, user):
             return jsonify({'erro': 404})
         admin_id, user_id = db.ban(username, user)
     except Exception as e:
+        db.connection.rollback()
         print(e)
         return jsonify({'erro': 401})
     return jsonify({'adminId': admin_id, 'userId': user_id})

@@ -298,6 +298,7 @@ def finishAuction():
     """Terminar leilão na data, hora e minuto marcados"""
     try:
         db.finishAuctions()
+        db.connection.commit()
         return jsonify({'status': 'success'})
     except Exception as e:
         db.connection.rollback()

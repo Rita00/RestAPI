@@ -1,19 +1,21 @@
 # imports
 import psycopg2
+import os
 from cryptography.fernet import Fernet
 
 if __name__ == '__main__':
 
-    BIDYOURAUCTION_HOST = "ec2-34-254-69-72.eu-west-1.compute.amazonaws.com"
-    BIDYOURAUCTION_PORT = "5432"
-    BIDYOURAUCTION_DB = "das7ket3c5aarn"
-    BIDYOURAUCTION_PASSWORD = "eb4ada6829ffce0e0f516062ea258ca6aa14d2fd85ea907ad910aa62eaf1412a"
-    BIDYOURAUCTION_USER = "vtxuzrplfviiht"
     
+    BIDYOURAUCTION_USER = os.environ.get('BIDYOURAUCTION_USER')
+    BIDYOURAUCTION_PASSWORD = os.environ.get('BIDYOURAUCTION_PASSWORD')
+    BIDYOURAUCTION_HOST = os.environ.get('BIDYOURAUCTION_HOST')
+    BIDYOURAUCTION_PORT = os.environ.get('BIDYOURAUCTION_PORT')
+    BIDYOURAUCTION_DB = os.environ.get('BIDYOURAUCTION_DB')
     
-    KEY = 'pRmgMa8T0INjEAfksaq2aafzoZXEuwKI7wDe4c1F8AY='
+    SECRET = os.environ.get('SECRET')
+    KEY = os.environ.get('KEY')
 
-    f = Fernet(bytes(KEY, "utf-8"))
+    f = Fernet(KEY.encode())
 
     
     connection = psycopg2.connect(
@@ -24,6 +26,7 @@ if __name__ == '__main__':
         database=BIDYOURAUCTION_DB
     )
 
+    #[ [username, password, email], ... ]
     admins = [
         ["bruno", "faria", "brunofaria@email.com"],
         ["rita", "rodrigues", "ritarodrigues@email.com"],

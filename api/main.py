@@ -414,6 +414,7 @@ if __name__ == '__main__':
     BIDYOURAUCTION_DB = os.environ.get('BIDYOURAUCTION_DB')
     
     SECRET = os.environ.get('SECRET')
+    KEY = os.environ.get('KEY')
     '''
 
     # TO REMOVE

@@ -340,8 +340,10 @@ def cancelAuction(username, leilaoId):
             return jsonify({'erro': "Sem permissões de administrador!"})
         elif res == "noAuction":
             return jsonify({'erro': "O leilão não existe!"})
-        elif res == "inactive":
+        elif res == "cancelled":
             return jsonify({'erro': "O leilão já está cancelado!"})
+        elif res == "inactive":
+            return jsonify({'erro': 'O leilão está terminado, impossível cancelar!'})
         else:
             return jsonify(res)
     except Exception as e:

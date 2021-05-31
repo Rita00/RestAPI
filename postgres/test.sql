@@ -193,3 +193,10 @@ SELECT max(price) as price FROM bid WHERE auction_id = 4;
 SELECT count(*) FROM textual_description WHERE auction_id = -1;
 
 SELECT * from auction WHERE id = 2;
+
+SELECT participant_person_id
+	INTO outbids_author
+	FROM bid
+	WHERE auction_id = 5 AND id != 5 AND participant_person_id != -1
+	ORDER BY bid_date DESC
+	LIMIT 1

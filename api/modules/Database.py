@@ -214,12 +214,11 @@ class Database(object):
         self.connection.commit()
         return message_id
 
-    def signIn(self, username, password):
+    def signIn(self, username):
         """
                 Efetuar login na aplicação
 
                 :param username: nome de utilizador
-                :param password: password do utilizador
 
                 :return: true caso o user exista na base de dados, false caso contrário e banned caso o utilizador esteja banido
                 """
@@ -228,33 +227,35 @@ class Database(object):
         # password1 = '\' union select * from participant WHERE \'1\'= \'1'
 
         sql = """   
-                SELECT * 
+                SELECT person_id, person_password, isbanned
                 FROM participant
-                WHERE (person_username = %s AND person_password = %s) 
+                WHERE person_username = %s
             """
-        cursor.execute(sql, (username, password))
+        cursor.execute(sql, (username, ))
         if cursor.rowcount < 1:
+            #ADMIN
             sql = """   
-                    SELECT * 
+                    SELECT person_id, person_password 
                     FROM admin
-                    WHERE (person_username = %s AND person_password = %s) 
+                    WHERE person_username = %s
                 """
-            cursor.execute(sql, (username, password))
+            cursor.execute(sql, (username, ))
             if cursor.rowcount < 1:
                 cursor.close()
-                return False
+                return [False, 'User not found']
                 # return 'AuthError'
+            admin = cursor.fetchone()
             cursor.close()
-            return True
+            return [True, admin[1]]
 
-        isBanned = 'SELECT isbanned FROM participant WHERE person_username = %s'
-        cursor.execute(isBanned, (username,))
-        isBanned = cursor.fetchone()[0]
-        if isBanned:
+        #ELSE: Participant
+        participant = cursor.fetchone()
+        
+        if participant[2]:
             cursor.close()
-            return 'banned'
+            return [False, 'banned']
         cursor.close()
-        return True
+        return [True, participant[1]]
 
     def listAllAuctions(self):
         cursor = self.connection.cursor()

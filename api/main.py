@@ -4,6 +4,7 @@ from flask import Flask, request, jsonify
 import datetime
 import jwt
 from functools import wraps
+from cryptography.fernet import Fernet
 import platform
 import os
 import random
@@ -13,6 +14,7 @@ import modules.Utils as utils
 
 # config
 global db
+global f
 app = Flask(__name__)
 
 
@@ -86,7 +88,9 @@ def signUp():
         valid = valid & utils.isemail(content['email'])
         if not valid:
             return jsonify({'erro': 404})
-        id = db.signUp(content['username'], content['email'], content['password'])
+        enc = f.encrypt(content['password'].encode())
+        id = db.signUp(content['username'], content['email'], enc.decode())
+        print(enc)
     except Exception as e:
         db.connection.rollback()
         print(e)
@@ -103,14 +107,17 @@ def signIn():
         valid = utils.validateTypes(content, [str, str])
         if not valid:
             return jsonify({'erro': 404})
-        correctSignIn = db.signIn(content['username'], content['password'])
-        if correctSignIn == True:
+        correctSignIn = db.signIn(content['username'])
+        print(correctSignIn)
+        decoded = f.decrypt(correctSignIn[1].encode()).decode()
+        print(decoded)
+        if correctSignIn[0] == True and content['password'] == decoded:
             token = generate_token(content['username'])
 
             return jsonify({'authToken': token})
 
         # Is Banned
-        elif 'banned' == correctSignIn:
+        elif 'banned' == correctSignIn[1]:
             return jsonify({'erro': 'User is banned'})
         # wrong credentials
         return jsonify({'erro': 401, 'message': 'Wrong credentials'})
@@ -400,9 +407,15 @@ if __name__ == '__main__':
     BIDYOURAUCTION_PASSWORD = "eb4ada6829ffce0e0f516062ea258ca6aa14d2fd85ea907ad910aa62eaf1412a"
     BIDYOURAUCTION_USER = "vtxuzrplfviiht"
 
-    SECRET = b'\x13\xfc\xe2\x92\x0eE4\xd2\x92\xdd\xd4\x11np\xc8\x0c+<\xb1\xe8i\xf0\xc4O'
+    SECRET = '\x13\xfc\xe2\x92\x0eE4\xd2\x92\xdd\xd4\x11np\xc8\x0c+<\xb1\xe8i\xf0\xc4O'
+    
+    #Fernet.generate_key()
+    #to generate new key
+    KEY = 'pRmgMa8T0INjEAfksaq2aafzoZXEuwKI7wDe4c1F8AY='
 
-    app.config['SECRET'] = SECRET
+    f = Fernet(bytes(KEY, "utf-8"))
+
+    app.config['SECRET'] = bytes(SECRET, "utf-8")
 
     print(BIDYOURAUCTION_USER, BIDYOURAUCTION_PASSWORD, BIDYOURAUCTION_HOST, BIDYOURAUCTION_PORT, BIDYOURAUCTION_DB)
     db = database.Database(

@@ -208,16 +208,13 @@ def bid(username, leilaoId, licictacao):
         if not valid:
             return jsonify({'erro': 404})
         bid_id = db.bid(username, leilaoId, licictacao)
+        db.connection.commit()
         if bid_id == 'inactive':
-            db.connection.commit()
             return jsonify({'erro': 'O leilão está inativo.'})
         if bid_id == 'noAuction':
-            db.connection.commit()
             return jsonify({'erro': 'O leilão não existe.'})
         if bid_id == 'lowPrice':
-            db.connection.commit()
             return jsonify({'erro': 'Licitação demasiado baixa.'})
-        db.connection.commit()
         return jsonify({'licitacaoId': bid_id})
     except Exception as e:
         db.connection.rollback()
@@ -251,6 +248,10 @@ def writeFeedMessage(username, leilaoId):
         if not valid:
             return jsonify({'erro': 404})
         message_id = db.writeFeedMessage(username, leilaoId, content["message"], content["type"])
+        if message_id == "noAuction":
+            return jsonify({'erro': 'O leilão não existe!'})
+        if message_id == "cancelled":
+            return jsonify({'erro': 'O leilão não está ativo, não pode escrever mensagens!'})
     except Exception as e:
         db.connection.rollback()
         print(e)
@@ -304,6 +305,7 @@ def finishAuction():
     """Terminar leilão na data, hora e minuto marcados"""
     try:
         db.finishAuctions()
+        db.connection.commit()
         return jsonify({'status': 'success'})
     except Exception as e:
         db.connection.rollback()
@@ -343,8 +345,10 @@ def cancelAuction(username, leilaoId):
             return jsonify({'erro': "Sem permissões de administrador!"})
         elif res == "noAuction":
             return jsonify({'erro': "O leilão não existe!"})
-        elif res == "inactive":
+        elif res == "cancelled":
             return jsonify({'erro': "O leilão já está cancelado!"})
+        elif res == "inactive":
+            return jsonify({'erro': 'O leilão está terminado, impossível cancelar!'})
         else:
             return jsonify(res)
     except Exception as e:

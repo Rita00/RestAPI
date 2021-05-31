@@ -191,3 +191,45 @@ SELECT isactive FROM auction WHERE id = 1;
 SELECT max(price) as price FROM bid WHERE auction_id = 4;
 
 SELECT count(*) FROM textual_description WHERE auction_id = -1;
+
+SELECT * from auction WHERE id = 2;
+
+SELECT participant_person_id
+	INTO outbids_author
+	FROM bid
+	WHERE auction_id = 5 AND id != 5 AND participant_person_id != -1
+	ORDER BY bid_date DESC
+	LIMIT 1
+
+SELECT person_id
+                        FROM participant
+                        WHERE person_username='dylanadmin';
+
+SELECT * FROM auction
+        WHERE isactive = True AND end_date < now();
+
+select participant_person_id from bid, participant WHERE bid.participant_person_id = participant.person_id and auction_id = 4 ORDER BY price desc
+                    limit 1;
+
+select person_username FROM participant WHERE person_id = 2 and isbanned != False
+
+select * from auction where isactive = true and end_date < now();
+update auction set isactive = false WHERE id = 4;
+UPDATE auction SET isactive = false WHERE isactive = true and end_date < now();
+
+select participant_person_id
+        from bid,
+             participant
+        WHERE bid.participant_person_id = participant.person_id
+          and auction_id = 2
+        ORDER BY price desc
+        limit 1;
+
+select person_username
+        FROM participant
+        WHERE person_id = -1
+          and isbanned = False;
+
+UPDATE auction SET winner = 'dylanperdigao' WHERE id = 2;
+
+select max(price) as price from bid WHERE auction_id = 2 AND bid.isinvalided = false;

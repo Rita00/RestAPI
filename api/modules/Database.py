@@ -136,21 +136,26 @@ class Database(object):
         sqlAuction = 'SELECT isactive FROM auction WHERE id = %s'
         cursor.execute(sqlAuction, (auction_id,))
         if cursor.rowcount < 1:
+            cursor.close()
             return 'noAuction'
         isActive = cursor.fetchone()[0]
         if isActive == False:
+            cursor.close()
             return 'inactive'
         sqlPrice = 'SELECT min_price FROM auction WHERE id = %s'
         cursor.execute(sqlPrice, (auction_id,))
         priceAuction = cursor.fetchone()[0]
         if priceAuction >= float(price):
+            cursor.close()
             return 'lowPrice'
 
         sqlMaxBidPrice = 'SELECT max(price) as price FROM bid WHERE auction_id = %s'
         cursor.execute(sqlMaxBidPrice, (auction_id,))
         maxBidPrice = cursor.fetchone()[0]
         if maxBidPrice >= float(price):
+            cursor.close()
             return 'lowPrice'
+
         # buscar id do participante
         cursor.execute("""
                         SELECT person_id
@@ -186,8 +191,19 @@ class Database(object):
 
         :return: id da mensagem
         """
-
         cursor = self.connection.cursor()
+        # Check if auction exists
+        hasAuction = 'SELECT * from auction WHERE id = %s'
+        cursor.execute(hasAuction, (auction_id,))
+        if cursor.rowcount < 1:
+            cursor.close()
+            return "noAuction"
+        # Check if auction isn't cancelled
+        isCancelled = 'SELECT iscancelled FROM auction WHERE id = %s'
+        cursor.execute(isCancelled, (auction_id,))
+        if cursor.fetchone()[0]:
+            cursor.close()
+            return "cancelled"
         # buscar id do participante
         cursor.execute("""
                         SELECT person_id
@@ -376,7 +392,9 @@ class Database(object):
     def finishAuctions(self):
         # calls a procedure for efficiency
         cursor = self.connection.cursor()
-        cursor.execute("CALL finish_auctions();")
+        sql = 'UPDATE auction SET isactive = false WHERE isactive = true and end_date < now();'
+        cursor.execute(sql)
+        # cursor.execute("CALL finish_auctions();")
         cursor.close()
         return True
 
@@ -418,17 +436,6 @@ class Database(object):
 
     def cancelAuction(self, leilaoId, username):
         cursor = self.connection.cursor()
-        sqlActive = 'SELECT isactive FROM auction WHERE id = %s'
-        cursor.execute(sqlActive, (leilaoId,))
-        isActive = cursor.fetchone()[0]
-        if isActive == False:
-            return "inactive"
-        sqlAdmin = 'SELECT * FROM admin WHERE person_username = %s'
-        cursor.execute(sqlAdmin, (username,))
-        # O user não é administrador
-        if cursor.rowcount < 1:
-            cursor.close()
-            return "notAdmin"
         # Check if auction exists
         sqlVerifyAuction = 'SELECT * FROM auction WHERE id = %s'
         cursor.execute(sqlVerifyAuction, (leilaoId,))
@@ -436,6 +443,31 @@ class Database(object):
         if cursor.rowcount < 1:
             cursor.close()
             return "noAuction"
+
+        # Verify if auction was cancelled
+        sqlCancel = 'SELECT iscancelled FROM auction WHERE id = %s'
+        cursor.execute(sqlCancel, (leilaoId,))
+        isCancelled = cursor.fetchone()[0]
+        if isCancelled:
+            cursor.close()
+            return "cancelled"
+
+        # Verify if auction is active
+        sqlActive = 'SELECT isactive FROM auction WHERE id = %s'
+        cursor.execute(sqlActive, (leilaoId,))
+        isActive = cursor.fetchone()[0]
+        if not isActive:
+            cursor.close()
+            return "inactive"
+
+        # Verify is user is Admin
+        sqlAdmin = 'SELECT * FROM admin WHERE person_username = %s'
+        cursor.execute(sqlAdmin, (username,))
+        # O user não é administrador
+        if cursor.rowcount < 1:
+            cursor.close()
+            return "notAdmin"
+
         sqlCancel = 'UPDATE auction SET iscancelled = true, isactive = false WHERE id = %s'
         cursor.execute(sqlCancel, (leilaoId,))
         cursor.close()

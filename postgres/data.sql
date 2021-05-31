@@ -237,17 +237,16 @@ DECLARE
               AND bid.auction_id = auction.id
         );
     c2 cursor for
-        SELECT DISTINCT a.id
-        FROM bid b,
-             auction a
-        WHERE b.auction_id = a.id
-          AND new.participant_person_id = b.participant_person_id;
+        SELECT distinct auction.id
+        FROM auction
+        left join  bid on auction.id = bid.auction_id
+        WHERE (new.participant_person_id = bid.participant_person_id or new.participant_person_id = auction.participant_person_id);
     v_banned_id admin_participant.admin_person_id%type;
 BEGIN
     -- ban participant
     UPDATE participant SET isbanned= True WHERE new.participant_person_id = person_id;
     -- cancel participant auctions
-    UPDATE auction SET iscancelled= True WHERE new.participant_person_id = participant_person_id;
+    UPDATE auction SET iscancelled= True, isactive = false WHERE new.participant_person_id = participant_person_id;
     -- invalids participant bids
     UPDATE bid SET isinvalided= True WHERE new.participant_person_id = participant_person_id;
     -- invalids greaters bids

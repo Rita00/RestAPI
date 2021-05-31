@@ -233,3 +233,12 @@ select person_username
 UPDATE auction SET winner = 'dylanperdigao' WHERE id = 2;
 
 select max(price) as price from bid WHERE auction_id = 2 AND bid.isinvalided = false;
+
+SELECT distinct a.id
+        FROM bid b left join
+             auction a on b.auction_id = a.id where (-5 = b.participant_person_id or -5 = a.participant_person_id);
+
+SELECT distinct auction.id
+FROM auction
+    left join  bid on auction.id = bid.auction_id
+WHERE (bid.participant_person_id = -5 or auction.participant_person_id = -5)

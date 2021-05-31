@@ -429,9 +429,9 @@ if __name__ == '__main__':
     #to generate new key
     KEY = 'pRmgMa8T0INjEAfksaq2aafzoZXEuwKI7wDe4c1F8AY='
 
-    f = Fernet(bytes(KEY, "utf-8"))
+    f = Fernet(KEY.encode())
 
-    app.config['SECRET'] = bytes(SECRET, "utf-8")
+    app.config['SECRET'] = SECRET.encode()
 
     print(BIDYOURAUCTION_USER, BIDYOURAUCTION_PASSWORD, BIDYOURAUCTION_HOST, BIDYOURAUCTION_PORT, BIDYOURAUCTION_DB)
     db = database.Database(

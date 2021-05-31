@@ -143,13 +143,13 @@ class Database(object):
         sqlPrice = 'SELECT min_price FROM auction WHERE id = %s'
         cursor.execute(sqlPrice, (auction_id, ))
         priceAuction = cursor.fetchone()[0]
-        if priceAuction > float(price):
+        if priceAuction >= float(price):
             return 'lowPrice'
 
         sqlMaxBidPrice = 'SELECT max(price) as price FROM bid WHERE auction_id = %s'
         cursor.execute(sqlMaxBidPrice, (auction_id,))
         maxBidPrice = cursor.fetchone()[0]
-        if maxBidPrice > float(price):
+        if maxBidPrice >= float(price):
             return 'lowPrice'
         # buscar id do participante
         cursor.execute("""

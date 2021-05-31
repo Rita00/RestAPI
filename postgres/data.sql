@@ -192,13 +192,14 @@ BEGIN
 	SELECT participant_person_id 
 	INTO outbids_author 
 	FROM bid 
-	WHERE auction_id = new.auction_id AND id != new.id AND participant_person_id != new.participant_person_id
+	WHERE auction_id = new.auction_id AND id != new.id
 	ORDER BY bid_date DESC
 	LIMIT 1;
 
 	-- notify auction Creator
-    call public.sendNotification(outbids_author, 'A tua licitação no leilão ' || new.auction_id || ' foi ultrapassada');
-
+	if outbids_author != new.participant_person_id then
+        call public.sendNotification(outbids_author, 'A tua licitação no leilão ' || new.auction_id || ' foi ultrapassada');
+    end if;
     RETURN new;
 END;
 $$;

@@ -200,3 +200,7 @@ SELECT participant_person_id
 	WHERE auction_id = 5 AND id != 5 AND participant_person_id != -1
 	ORDER BY bid_date DESC
 	LIMIT 1
+
+SELECT person_id
+                        FROM participant
+                        WHERE person_username='dylanadmin'

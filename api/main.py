@@ -201,16 +201,13 @@ def bid(username, leilaoId, licictacao):
         if not valid:
             return jsonify({'erro': 404})
         bid_id = db.bid(username, leilaoId, licictacao)
+        db.connection.commit()
         if bid_id == 'inactive':
-            db.connection.commit()
             return jsonify({'erro': 'O leilão está inativo.'})
         if bid_id == 'noAuction':
-            db.connection.commit()
             return jsonify({'erro': 'O leilão não existe.'})
         if bid_id == 'lowPrice':
-            db.connection.commit()
             return jsonify({'erro': 'Licitação demasiado baixa.'})
-        db.connection.commit()
         return jsonify({'licitacaoId': bid_id})
     except Exception as e:
         db.connection.rollback()

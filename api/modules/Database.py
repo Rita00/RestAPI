@@ -315,7 +315,8 @@ class Database(object):
         sqlAuction = 'SELECT distinct on (auction.id) auction.id, end_date, description, title FROM auction, textual_description WHERE auction.id = textual_description.auction_id AND id = %s ORDER BY auction.id, version desc'
         cursor.execute(sqlAuction, (auction_id,))
         if cursor.rowcount < 1:
-            res = []
+            cursor.close()
+            return "noAuction"
         else:
             row = cursor.fetchone()
             res = {"leilãoId": row[0], "dataFim": row[1], "descricao": row[2], 'titulo': row[3]}

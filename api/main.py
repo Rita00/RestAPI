@@ -236,6 +236,8 @@ def detailsAuction(username, leilaoId):
             return jsonify({'erro': 404})
         details = db.detailsAuction(leilaoId)
         db.connection.commit()
+        if details == "noAuction":
+            return jsonify({'erro': 'O leilão não existe!'})
         return jsonify(details)
     except Exception as e:
         db.connection.rollback()
@@ -424,9 +426,9 @@ if __name__ == '__main__':
     BIDYOURAUCTION_USER = "vtxuzrplfviiht"
 
     SECRET = '\x13\xfc\xe2\x92\x0eE4\xd2\x92\xdd\xd4\x11np\xc8\x0c+<\xb1\xe8i\xf0\xc4O'
-    
-    #Fernet.generate_key()
-    #to generate new key
+
+    # Fernet.generate_key()
+    # to generate new key
     KEY = 'pRmgMa8T0INjEAfksaq2aafzoZXEuwKI7wDe4c1F8AY='
 
     f = Fernet(KEY.encode())

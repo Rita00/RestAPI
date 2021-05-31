@@ -145,15 +145,15 @@ def createAuction(username):
 @app.route('/dbproj/leiloes', methods=['GET'])
 @verify_token
 def listAllAuctions(username):
-    """Listar Todos os leilões existentes"""
+    """Listar Todos os leilões existentes que estão a decorrer"""
     try:
         auctions = db.listAllAuctions()
         db.connection.commit()
+        return jsonify(auctions)
     except Exception as e:
         db.connection.rollback()
         print(e)
         return jsonify({'erro': 401})
-    return jsonify(auctions)
 
 
 @app.route('/dbproj/leiloes/<keyword>', methods=['GET'])

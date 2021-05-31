@@ -135,9 +135,22 @@ class Database(object):
         # Verificar se o leilão está ativo
         sqlAuction = 'SELECT isactive FROM auction WHERE id = %s'
         cursor.execute(sqlAuction, (auction_id,))
+        if cursor.rowcount < 1:
+            return 'noAuction'
         isActive = cursor.fetchone()[0]
         if isActive == False:
             return 'inactive'
+        sqlPrice = 'SELECT min_price FROM auction WHERE id = %s'
+        cursor.execute(sqlPrice, (auction_id, ))
+        priceAuction = cursor.fetchone()[0]
+        if priceAuction > float(price):
+            return 'lowPrice'
+
+        sqlMaxBidPrice = 'SELECT max(price) as price FROM bid WHERE auction_id = %s'
+        cursor.execute(sqlMaxBidPrice, (auction_id,))
+        maxBidPrice = cursor.fetchone()[0]
+        if maxBidPrice > float(price):
+            return 'lowPrice'
         # buscar id do participante
         cursor.execute("""
                         SELECT person_id

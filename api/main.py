@@ -196,14 +196,14 @@ def listUserAuctions(username):
             return jsonify({'erro': 404})
         auctions = db.listUserAuctions(username)
         db.connection.commit()
-        return jsonify(auctions)  # TODO ajeitar isto
+        return jsonify(auctions)
     except Exception as e:
         db.connection.rollback()
         print(e)
         return jsonify({'erro': 401})
 
 
-@app.route(f'/dbproj/licitar/<leilaoId>/<licictacao>', methods=['POST'])  # TODO leilaoId
+@app.route(f'/dbproj/licitar/<leilaoId>/<licictacao>', methods=['POST'])
 @verify_token
 def bid(username, leilaoId, licictacao):
     """Listar os leilões em que o utilizador tenha uma atividade"""

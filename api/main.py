@@ -90,13 +90,14 @@ def signUp():
             return jsonify({'erro': 404})
         enc = f.encrypt(content['password'].encode())
         id = db.signUp(content['username'], content['email'], enc.decode())
-        print(enc)
+        db.connection.commit()
+
+        print(f"Added user #{id}")
+        return jsonify({'userId': id})
     except Exception as e:
         db.connection.rollback()
         print(e)
         return jsonify({'erro': 401})
-    print(f"Added user #{id}")
-    return jsonify({'userId': id})
 
 
 @app.route('/dbproj/user', methods=['PUT'])
@@ -108,9 +109,9 @@ def signIn():
         if not valid:
             return jsonify({'erro': 404})
         correctSignIn = db.signIn(content['username'])
-        print(correctSignIn)
+        db.connection.commit()
+
         decoded = f.decrypt(correctSignIn[1].encode()).decode()
-        print(decoded)
         if correctSignIn[0] == True and content['password'] == decoded:
             token = generate_token(content['username'])
 
@@ -123,6 +124,7 @@ def signIn():
         return jsonify({'erro': 401, 'message': 'Wrong credentials'})
 
     except Exception as e:
+        db.connection.rollback()
         print(e)
         return jsonify({'erro': 401, 'message': e})
 
@@ -141,12 +143,13 @@ def createAuction(username):
             return jsonify({'erro': 404})
         id = db.createAuction(username, content['artigoId'], content['precoMinimo'],
                               content['dataFim'], content['titulo'], content['descricao'])
+        db.connection.commit()
+        print(f"Added auction #{id}")
+        return jsonify({'leilãoId': id})
     except Exception as e:
         db.connection.rollback()
         print(e)
         return jsonify({'erro': 401})
-    print(f"Added auction #{id}")
-    return jsonify({'leilãoId': id})
 
 
 @app.route('/dbproj/leiloes', methods=['GET'])
@@ -192,11 +195,12 @@ def listUserAuctions(username):
         if not valid:
             return jsonify({'erro': 404})
         auctions = db.listUserAuctions(username)
+        db.connection.commit()
+        return jsonify(auctions)  # TODO ajeitar isto
     except Exception as e:
         db.connection.rollback()
         print(e)
         return jsonify({'erro': 401})
-    return jsonify(auctions)  # TODO ajeitar isto
 
 
 @app.route(f'/dbproj/licitar/<leilaoId>/<licictacao>', methods=['POST'])  # TODO leilaoId
@@ -231,10 +235,12 @@ def detailsAuction(username, leilaoId):
         if not valid:
             return jsonify({'erro': 404})
         details = db.detailsAuction(leilaoId)
+        db.connection.commit()
+        return jsonify(details)
     except Exception as e:
+        db.connection.rollback()
         print(e)
         return jsonify({'erro': 401})
-    return jsonify(details)
 
 
 @app.route('/dbproj/feed/<leilaoId>', methods=['POST'])
@@ -248,15 +254,18 @@ def writeFeedMessage(username, leilaoId):
         if not valid:
             return jsonify({'erro': 404})
         message_id = db.writeFeedMessage(username, leilaoId, content["message"], content["type"])
+        db.connection.commit()
+
         if message_id == "noAuction":
             return jsonify({'erro': 'O leilão não existe!'})
         if message_id == "cancelled":
             return jsonify({'erro': 'O leilão não está ativo, não pode escrever mensagens!'})
+
+        return jsonify({'messageId': message_id})
     except Exception as e:
         db.connection.rollback()
         print(e)
         return jsonify({'erro': 401})
-    return jsonify({'messageId': message_id})
 
 
 @app.route('/dbproj/leilao/edit/<leilaoId>', methods=['PUT'])
@@ -270,6 +279,7 @@ def editAuction(username, leilaoId):
         if not valid:
             return jsonify({'erro': 404})
         res = db.editAuction(leilaoId, content["titulo"], content["descricao"], username)
+        db.connection.commit()
         if res == "notCreator":
             return jsonify({'erro': "Não é o criador do leilão, não o pode editar!"})
         if res == "noAuction":
@@ -293,6 +303,7 @@ def getNotifications(username):
         if not valid:
             return jsonify({'erro': 404})
         notifications = db.listNotifications(username)
+        db.connection.commit()
         return jsonify(notifications)
     except Exception as e:
         db.connection.rollback()
@@ -324,11 +335,12 @@ def ban(username, user):
         if not valid:
             return jsonify({'erro': 404})
         admin_id, user_id = db.ban(username, user)
+        db.connection.commit()
+        return jsonify({'adminId': admin_id, 'userId': user_id})
     except Exception as e:
         db.connection.rollback()
         print(e)
         return jsonify({'erro': 401})
-    return jsonify({'adminId': admin_id, 'userId': user_id})
 
 
 @app.route('/dbproj/leilao/cancel/<leilaoId>', methods=['PUT'])

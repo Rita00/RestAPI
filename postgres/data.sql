@@ -7,7 +7,6 @@ DROP TABLE IF EXISTS participant CASCADE;
 DROP TABLE IF EXISTS textual_description CASCADE;
 DROP TABLE IF EXISTS admin_auction CASCADE;
 DROP TABLE IF EXISTS admin_participant CASCADE;
-
 --TABELAS===========================================
 CREATE TABLE auction
 (
@@ -303,7 +302,6 @@ BEGIN
     return new;
 END;
 $$;
-UPDATE auction SET iscancelled = true, isactive = false WHERE id = 5;
 DROP TRIGGER IF EXISTS tau_cancel ON auction;
 --- Create
 CREATE TRIGGER tau_cancel
@@ -313,7 +311,39 @@ CREATE TRIGGER tau_cancel
     EXECUTE PROCEDURE send_notification_cancel();
 
 
+DROP FUNCTION IF EXISTS  finish_auctions() CASCADE;
+CREATE OR REPLACE FUNCTION finish_auctions() RETURNS TRIGGER
+    LANGUAGE plpgsql as
+$$
+DECLARE
+    v_person_winner participant.person_id%type;
+    v_person_username_winner participant.person_username%type;
+    v_max_bid  bid.price%type;
+    c1 cursor for
+        SELECT *
+        FROM auction
+        WHERE isactive = True AND end_date < now()
+            for update;
 
+BEGIN
+    for r in c1
+        loop
+        select participant_person_id into v_person_winner from bid, participant WHERE bid.participant_person_id = participant.person_id and auction_id = r.id ORDER BY price desc
+                    limit 1;
+        select person_username into v_person_username_winner FROM participant WHERE person_id = v_person_winner and isbanned != False;
+        UPDATE auction SET winner = v_person_username_winner WHERE id = r.id;
+        select max(price) into v_max_bid from bid WHERE auction_id = r.id AND bid.isinvalided != false;
+        UPDATE auction set maxbid = v_max_bid WHERE auction = r.id;
+        end loop;
+    RETURN new;
+END
+$$;
+DROP TRIGGER IF EXISTS tau_terminateAuction ON auction cascade;
+CREATE TRIGGER tau_terminateAuction
+    AFTER UPDATE OF isactive
+    ON auction
+    FOR EACH ROW
+    execute procedure finish_auctions();
 
 
 --finished auctions
@@ -347,9 +377,9 @@ BEGIN
                     )
             WHERE id = r.id;
         end loop;
-END;
+END
 $$;
-
+call finish_auctions();
 
 --DADOS TESTE===========================================
 --Pessoas teste

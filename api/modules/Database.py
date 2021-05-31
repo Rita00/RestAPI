@@ -391,7 +391,9 @@ class Database(object):
     def finishAuctions(self):
         # calls a procedure for efficiency
         cursor = self.connection.cursor()
-        cursor.execute("CALL finish_auctions();")
+        sql = 'UPDATE auction SET isactive = false WHERE isactive = true and end_date < now()'
+        cursor.execute(sql)
+        # cursor.execute("CALL finish_auctions();")
         cursor.close()
         return True
 

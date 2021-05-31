@@ -203,4 +203,17 @@ SELECT participant_person_id
 
 SELECT person_id
                         FROM participant
-                        WHERE person_username='dylanadmin'
+                        WHERE person_username='dylanadmin';
+
+SELECT * FROM auction
+        WHERE isactive = True AND end_date < now();
+
+select participant_person_id from bid, participant WHERE bid.participant_person_id = participant.person_id and auction_id = 4 ORDER BY price desc
+                    limit 1;
+
+select person_username FROM participant WHERE person_id = 2 and isbanned != False
+
+select * from auction where isactive = true and end_date < now();
+update auction set isactive = false WHERE id = 4;
+UPDATE auction SET isactive = false WHERE isactive = true and end_date < now();
+

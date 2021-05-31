@@ -295,8 +295,8 @@ class Database(object):
     def listAuctions(self, param):
         cursor = self.connection.cursor()
         # Verifica se em alguma versão existe a descrição a pesquisar
-        checkTextualDescription = 'select distinct auction_id from auction, textual_description WHERE auction.id = textual_description.auction_id and (auction.code::text = %s OR textual_description.description like %s) AND isactive = true'
-        cursor.execute(checkTextualDescription, (param, '%' + param + '%'))
+        checkTextualDescription = 'select distinct auction_id from auction, textual_description WHERE auction.id = textual_description.auction_id and (auction.code::text = %s OR lower(textual_description.description) like %s AND isactive = true)'
+        cursor.execute(checkTextualDescription, (param, '%' + param.lower() + '%'))
         # Não há o parametro a pesquisar
         if cursor.rowcount < 1:
             cursor.close()

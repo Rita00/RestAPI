@@ -408,7 +408,6 @@ def home():
 
 
 if __name__ == '__main__':
-    '''
     BIDYOURAUCTION_USER = os.environ.get('BIDYOURAUCTION_USER')
     BIDYOURAUCTION_PASSWORD = os.environ.get('BIDYOURAUCTION_PASSWORD')
     BIDYOURAUCTION_HOST = os.environ.get('BIDYOURAUCTION_HOST')
@@ -417,26 +416,11 @@ if __name__ == '__main__':
     
     SECRET = os.environ.get('SECRET')
     KEY = os.environ.get('KEY')
-    '''
-
-    # TO REMOVE
-    BIDYOURAUCTION_HOST = "ec2-34-254-69-72.eu-west-1.compute.amazonaws.com"
-    BIDYOURAUCTION_PORT = "5432"
-    BIDYOURAUCTION_DB = "das7ket3c5aarn"
-    BIDYOURAUCTION_PASSWORD = "eb4ada6829ffce0e0f516062ea258ca6aa14d2fd85ea907ad910aa62eaf1412a"
-    BIDYOURAUCTION_USER = "vtxuzrplfviiht"
-
-    SECRET = '\x13\xfc\xe2\x92\x0eE4\xd2\x92\xdd\xd4\x11np\xc8\x0c+<\xb1\xe8i\xf0\xc4O'
-
-    # Fernet.generate_key()
-    # to generate new key
-    KEY = 'pRmgMa8T0INjEAfksaq2aafzoZXEuwKI7wDe4c1F8AY='
 
     f = Fernet(KEY.encode())
 
     app.config['SECRET'] = SECRET.encode()
 
-    print(BIDYOURAUCTION_USER, BIDYOURAUCTION_PASSWORD, BIDYOURAUCTION_HOST, BIDYOURAUCTION_PORT, BIDYOURAUCTION_DB)
     db = database.Database(
         user=BIDYOURAUCTION_USER,
         password=BIDYOURAUCTION_PASSWORD,

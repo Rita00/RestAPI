@@ -139,6 +139,48 @@ BEGIN
 END;
 $$;
 
+--new message on feed
+DROP FUNCTION IF EXISTS  newFeedMessage() CASCADE;
+CREATE OR REPLACE FUNCTION newFeedMessage()
+RETURNS TRIGGER
+LANGUAGE plpgsql
+AS $$
+DECLARE
+	auction_creator participant.person_id%type;
+    c1 cursor for
+        SELECT DISTINCT participant_person_id
+        FROM feed_message
+        WHERE auction_id = new.auction_id 
+			AND participant_person_id != new.participant_person_id
+			AND participant_person_id != (
+				SELECT participant_person_id 
+				FROM auction 
+				WHERE id = new.auction_id
+			);
+BEGIN
+	SELECT participant_person_id INTO auction_creator FROM auction WHERE id = new.auction_id;
+
+	-- notify auction Creator
+    call public.sendNotification(auction_creator, 'Nova mensagem no feed do seu leilão ' || new.auction_id);
+
+    -- notify people
+    for person in c1
+        loop
+            call public.sendNotification(person.participant_person_id, 'Nova mensagem no leilão ' || new.auction_id);
+        end loop;
+
+    RETURN new;
+END;
+$$;
+
+DROP TRIGGER IF EXISTS tai_newMessage ON feed_message;
+CREATE TRIGGER tai_newMessage
+    AFTER INSERT
+    ON feed_message
+    FOR EACH ROW
+    EXECUTE PROCEDURE newFeedMessage();
+
+
 
 --participant banned
 DROP FUNCTION IF EXISTS  participant_banned() CASCADE;
@@ -225,7 +267,7 @@ AS $$
 BEGIN
     for r in c1
         loop
-         call public.sendNotification(r.participant_person_id, 'O leilao ' || r.id || ' foi cancelado!');
+        	call public.sendNotification(r.participant_person_id, 'O leilao ' || r.id || ' foi cancelado!');
         end loop;
     return new;
 END;

@@ -230,13 +230,13 @@ def writeFeedMessage(username, leilaoId):
     """Escrever mensagem no mural de um leilão"""
     try:
         content = request.json
-        print(content)
         valid = utils.validateTypes([username, leilaoId], [str, int])
         valid = valid & utils.validateTypes(content, [str, str])
         if not valid:
             return jsonify({'erro': 404})
         message_id = db.writeFeedMessage(username, leilaoId, content["message"], content["type"])
     except Exception as e:
+        db.connection.rollback()
         print(e)
         return jsonify({'erro': 401})
     return jsonify({'messageId': message_id})

@@ -315,7 +315,8 @@ class Database(object):
         sqlAuction = 'SELECT distinct on (auction.id) auction.id, end_date, description, title FROM auction, textual_description WHERE auction.id = textual_description.auction_id AND id = %s ORDER BY auction.id, version desc'
         cursor.execute(sqlAuction, (auction_id,))
         if cursor.rowcount < 1:
-            res = []
+            cursor.close()
+            return "noAuction"
         else:
             row = cursor.fetchone()
             res = {"leilãoId": row[0], "dataFim": row[1], "descricao": row[2], 'titulo': row[3]}
@@ -360,7 +361,7 @@ class Database(object):
         cursor.execute(auctionInfo, (auction_id, lastVersion))
         row = cursor.fetchone()
         cursor.close()
-        res = {"leilãoId": row[0], "codigo": row[1], "precoMin": row[2], "DataIni": row[3], "DataFim": row[4],
+        res = {"leilaoId": row[0], "codigo": row[1], "precoMin": row[2], "DataIni": row[3], "DataFim": row[4],
                "Ativo": row[5], "Criador": row[6], "Titulo": row[7], "Descricao": row[8]}
         return res
 

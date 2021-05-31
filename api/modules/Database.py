@@ -141,15 +141,15 @@ class Database(object):
         if isActive == False:
             return 'inactive'
         sqlPrice = 'SELECT min_price FROM auction WHERE id = %s'
-        cursor.execute(sqlPrice, (auction_id, ))
+        cursor.execute(sqlPrice, (auction_id,))
         priceAuction = cursor.fetchone()[0]
-        if priceAuction > float(price):
+        if priceAuction >= float(price):
             return 'lowPrice'
 
         sqlMaxBidPrice = 'SELECT max(price) as price FROM bid WHERE auction_id = %s'
         cursor.execute(sqlMaxBidPrice, (auction_id,))
         maxBidPrice = cursor.fetchone()[0]
-        if maxBidPrice > float(price):
+        if maxBidPrice >= float(price):
             return 'lowPrice'
         # buscar id do participante
         cursor.execute("""
@@ -313,6 +313,12 @@ class Database(object):
 
     def editAuction(self, auction_id, title, description, username):
         cursor = self.connection.cursor()
+        # Check if auction exists
+        hasAuction = 'SELECT * FROM auction WHERE id = %s'
+        cursor.execute(hasAuction, (auction_id,))
+        if cursor.rowcount < 1:
+            cursor.close()
+            return "noAuction"
         # Check if username is the creator of auction
         isCreator = 'SELECT * FROM auction JOIN participant on auction.participant_person_id = participant.person_id AND participant.person_username = %s AND auction.id = %s'
         cursor.execute(isCreator, (username, auction_id))
@@ -323,7 +329,6 @@ class Database(object):
         getLastVersion = 'SELECT count(*) FROM textual_description WHERE auction_id = %s'
         cursor.execute(getLastVersion, (auction_id,))
         lastVersion = cursor.fetchone()[0] + 1
-        lastVersion = lastVersion + 1
         sqlAuction = 'INSERT INTO textual_description(version, title, description, alteration_date, auction_id) VALUES(%s, %s, %s, %s, %s)'
         cursor.execute(sqlAuction, (lastVersion, title, description, 'now()', auction_id))
 

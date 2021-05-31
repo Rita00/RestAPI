@@ -10,8 +10,7 @@ if __name__ == '__main__':
     BIDYOURAUCTION_PASSWORD = "eb4ada6829ffce0e0f516062ea258ca6aa14d2fd85ea907ad910aa62eaf1412a"
     BIDYOURAUCTION_USER = "vtxuzrplfviiht"
     
-    #Fernet.generate_key()
-    #to generate new key
+    
     KEY = 'pRmgMa8T0INjEAfksaq2aafzoZXEuwKI7wDe4c1F8AY='
 
     f = Fernet(bytes(KEY, "utf-8"))

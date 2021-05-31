@@ -258,7 +258,15 @@ class Database(object):
 
     def listAllAuctions(self):
         cursor = self.connection.cursor()
-        sql = 'SELECT id, description FROM auction, textual_description WHERE auction.id = textual_description.auction_id'
+        sql = """SELECT a.id, t.description
+            FROM auction a, textual_description t 
+            WHERE a.id = t.auction_id
+                AND (t.auction_id, t.version) IN (
+                    SELECT auction_id, max(version)
+                    FROM textual_description 
+                    GROUP BY auction_id 
+                )
+                AND isactive = true;"""
         cursor.execute(sql)
         if cursor.rowcount < 1:
             res = []

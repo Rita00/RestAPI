@@ -110,16 +110,16 @@ def signIn():
             return jsonify({'erro': 404})
         correctSignIn = db.signIn(content['username'])
         db.connection.commit()
+        if correctSignIn[0]:
+            decoded = f.decrypt(correctSignIn[1].encode()).decode()
+            if correctSignIn[0] == True and content['password'] == decoded:
+                token = generate_token(content['username'])
 
-        decoded = f.decrypt(correctSignIn[1].encode()).decode()
-        if correctSignIn[0] == True and content['password'] == decoded:
-            token = generate_token(content['username'])
+                return jsonify({'authToken': token})
 
-            return jsonify({'authToken': token})
-
-        # Is Banned
-        elif 'banned' == correctSignIn[1]:
-            return jsonify({'erro': 'User is banned'})
+            # Is Banned
+            elif 'banned' == correctSignIn[1]:
+                return jsonify({'erro': 'User is banned'})
         # wrong credentials
         return jsonify({'erro': 401, 'message': 'Wrong credentials'})
 

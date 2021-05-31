@@ -194,11 +194,11 @@ class Database(object):
             cursor.close()
             return "noAuction"
         # Check if auction isn't cancelled
-        isActive = 'SELECT isactive FROM auction WHERE id = %s'
-        cursor.execute(isActive, (auction_id,))
-        if not cursor.fetchone()[0]:
+        isCancelled = 'SELECT iscancelled FROM auction WHERE id = %s'
+        cursor.execute(isCancelled, (auction_id,))
+        if cursor.fetchone()[0]:
             cursor.close()
-            return "inactive"
+            return "cancelled"
         # buscar id do participante
         cursor.execute("""
                         SELECT person_id

@@ -185,3 +185,7 @@ select * from textual_description where auction_id = 4;
 select distinct auction_id from auction, textual_description WHERE auction.id = textual_description.auction_id and (auction.code::text = 'v1' OR textual_description.description like '%v1%') AND isactive = true;
 
 SELECT distinct on (auction.id) auction.id, description FROM auction, textual_description WHERE auction.id = textual_description.auction_id AND auction_id = 4 ORDER BY auction.id, version desc;
+
+SELECT isactive FROM auction WHERE id = 1;
+
+SELECT max(price) as price FROM bid WHERE auction_id = 4;

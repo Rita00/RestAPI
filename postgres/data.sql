@@ -98,7 +98,6 @@ CREATE TABLE admin_participant
     PRIMARY KEY (participant_person_id)
 );
 
-
 ALTER TABLE auction
     ADD CONSTRAINT dates CHECK (end_date > begin_date);
 ALTER TABLE auction

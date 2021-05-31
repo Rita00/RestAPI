@@ -107,10 +107,12 @@ class Database(object):
         cursor.execute(getPersonId, (username,))
         persoId = cursor.fetchone()[0]
         cursor.execute(
-            """SELECT distinct on (auction.id) auction.id, description, version 
-            FROM auction, bid, textual_description 
-            WHERE auction.id = bid.auction_id and auction.id = textual_description.auction_id and (bid.participant_person_id = %s or auction.participant_person_id = %s) 
-            ORDER BY auction.id, version desc""",
+            """SELECT distinct on (auction.id) auction.id, description, version
+                FROM auction
+                left join  bid on auction.id = bid.auction_id
+                join textual_description on auction.id = textual_description.auction_id
+                WHERE (bid.participant_person_id = -1 or auction.participant_person_id = -1)
+                ORDER BY auction.id, version desc""",
             (persoId, persoId))
         if cursor.rowcount < 1:
             res = []
@@ -460,4 +462,3 @@ class Database(object):
         if cursor.rowcount > 0:
             res3 = cursor.fetchone()[0]
         return res1, res2, res3
-

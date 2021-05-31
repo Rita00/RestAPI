@@ -142,8 +142,10 @@ WHERE (t.auction_id,t.version)
                         )
 
 SELECT distinct on (auction.id) auction.id, description, version
-FROM auction, bid, textual_description
-WHERE auction.id = bid.auction_id and auction.id = textual_description.auction_id and (bid.participant_person_id = 15 or auction.participant_person_id = 15)
+FROM auction
+    left join  bid on auction.id = bid.auction_id
+    join textual_description on auction.id = textual_description.auction_id
+WHERE (bid.participant_person_id = -1 or auction.participant_person_id = -1)
 ORDER BY auction.id, version desc;
 
 select * from bid;

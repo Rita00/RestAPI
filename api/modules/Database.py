@@ -360,7 +360,7 @@ class Database(object):
         cursor.execute(auctionInfo, (auction_id, lastVersion))
         row = cursor.fetchone()
         cursor.close()
-        res = {"leilãoId": row[0], "codigo": row[1], "precoMin": row[2], "DataIni": row[3], "DataFim": row[4],
+        res = {"leilaoId": row[0], "codigo": row[1], "precoMin": row[2], "DataIni": row[3], "DataFim": row[4],
                "Ativo": row[5], "Criador": row[6], "Titulo": row[7], "Descricao": row[8]}
         return res
 

@@ -180,6 +180,37 @@ CREATE TRIGGER tai_newMessage
     EXECUTE PROCEDURE newFeedMessage();
 
 
+--outbid 
+DROP FUNCTION IF EXISTS  newBid() CASCADE;
+CREATE OR REPLACE FUNCTION newBid()
+RETURNS TRIGGER
+LANGUAGE plpgsql
+AS $$
+DECLARE
+	outbids_author participant.person_id%type;
+BEGIN
+	SELECT participant_person_id 
+	INTO outbids_author 
+	FROM bid 
+	WHERE auction_id = new.auction_id AND id != new.id AND participant_person_id != new.participant_person_id
+	ORDER BY bid_date DESC
+	LIMIT 1;
+
+	-- notify auction Creator
+    call public.sendNotification(outbids_author, 'A tua licitação no leilão ' || new.auction_id || ' foi ultrapassada');
+
+    RETURN new;
+END;
+$$;
+
+DROP TRIGGER IF EXISTS tai_outbid ON bid;
+CREATE TRIGGER tai_outbid
+    AFTER INSERT
+    ON bid
+    FOR EACH ROW
+    EXECUTE PROCEDURE newBid();
+
+
 
 --participant banned
 DROP FUNCTION IF EXISTS  participant_banned() CASCADE;

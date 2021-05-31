@@ -186,8 +186,19 @@ class Database(object):
 
         :return: id da mensagem
         """
-
         cursor = self.connection.cursor()
+        # Check if auction exists
+        hasAuction = 'SELECT * from auction WHERE id = %s'
+        cursor.execute(hasAuction, (auction_id,))
+        if cursor.rowcount < 1:
+            cursor.close()
+            return "noAuction"
+        # Check if auction isn't cancelled
+        isActive = 'SELECT isactive FROM auction WHERE id = %s'
+        cursor.execute(isActive, (auction_id,))
+        if not cursor.fetchone()[0]:
+            cursor.close()
+            return "inactive"
         # buscar id do participante
         cursor.execute("""
                         SELECT person_id

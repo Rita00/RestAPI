@@ -244,6 +244,10 @@ def writeFeedMessage(username, leilaoId):
         if not valid:
             return jsonify({'erro': 404})
         message_id = db.writeFeedMessage(username, leilaoId, content["message"], content["type"])
+        if message_id == "noAuction":
+            return jsonify({'erro': 'O leilão não existe!'})
+        if message_id == "inactive":
+            return jsonify({'erro': 'O leilão não está ativo, não pode escrever mensagens!'})
     except Exception as e:
         db.connection.rollback()
         print(e)

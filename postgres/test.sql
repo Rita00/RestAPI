@@ -191,3 +191,5 @@ SELECT isactive FROM auction WHERE id = 1;
 SELECT max(price) as price FROM bid WHERE auction_id = 4;
 
 SELECT count(*) FROM textual_description WHERE auction_id = -1;
+
+SELECT * from auction WHERE id = 2;

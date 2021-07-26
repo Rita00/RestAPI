@@ -138,4 +138,3 @@ PUT http://localhost:8080/dbproj/ban/{username}
 ```apache
 GET http://localhost:8080/dbproj/stats
 ```
-{"mode":"full","isActive":false}
